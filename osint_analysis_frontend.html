@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="be">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT Двухэтапны Аналіз</title>
+    <!-- Загрузка Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .stage-box {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center text-indigo-500">OSINT: Двухэтапная Стратэгія Пошуку</h1>
+
+        <!-- Секцыя 1: Увод Задачы і Генерацыя Запытаў -->
+        <div id="stage1" class="stage-box bg-white dark:bg-gray-800 p-6 rounded-xl mb-8 border border-indigo-500/50">
+            <h2 class="text-xl font-semibold mb-4 text-indigo-400">Крок 1: Генерацыя Пошукавай Стратэгіі</h2>
+
+            <label for="taskInput" class="block text-sm font-medium mb-2">Увядзіце поўную задачу (напр., Імя, Прозвішча,
+                Імя па бацьку, дадатковыя словы):</label>
+            <textarea id="taskInput" rows="2"
+                class="w-full p-3 mb-4 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Напрыклад: Зрабіць інфармацыйную даведку па Сіманаў Вадзім Юр'евіч"></textarea>
+
+            <button id="generateBtn" onclick="handleGenerateQueries()"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 disabled:opacity-50">
+                Генераваць Аптымальныя Запыты (Этап 1)
+            </button>
+
+            <div id="queriesContainer" class="mt-4 hidden">
+                <h3 class="text-lg font-medium mb-2 text-indigo-300">Спіс згенераваных запытаў (можна адкарэктаваць):
+                </h3>
+                <textarea id="queriesTextarea" rows="8"
+                    class="w-full p-3 border border-yellow-500/50 rounded-lg bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-yellow-500 focus:border-yellow-500"></textarea>
+            </div>
+        </div>
+
+        <!-- Секцыя 2: Выкананне Аналізу -->
+        <div id="stage2"
+            class="stage-box bg-white dark:bg-gray-800 p-6 rounded-xl mb-8 border border-green-500/50 opacity-50 pointer-events-none">
+            <h2 class="text-xl font-semibold mb-4 text-green-400">Крок 2: Запуск Поўнага Аналізу</h2>
+
+            <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
+                Націсніце кнопку, каб запусціць поўны пошук і сінтэз дадзеных, выкарыстоўваючы **адкарэктаваны** спіс
+                запытаў з поля вышэй.
+            </p>
+
+            <button id="analyzeBtn" onclick="handleRunAnalysis()" disabled
+                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 disabled:opacity-50">
+                Запусціць Агрэгацыю і Аналіз (Этап 2)
+            </button>
+        </div>
+
+        <!-- Секцыя Статусу і Памылак -->
+        <div id="status" class="mt-4 p-4 text-center text-sm rounded-lg transition duration-300 hidden"></div>
+
+        <!-- Секцыя Вынікаў -->
+        <div id="resultsContainer" class="mt-8">
+            <h2 class="text-2xl font-semibold mb-4 text-center hidden" id="resultsTitle">Вынікі Комплекснага Аналізу
+            </h2>
+            <div id="tsezkiList" class="space-y-4">
+                <!-- Тут будуць адлюстроўвацца tsezki -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Endpoints
+        const GENERATE_QUERIES_URL = '/api/generate-queries';
+        const ANALYZE_URL = '/api/analyze';
+
+        // DOM Elements
+        const taskInput = document.getElementById('taskInput');
+        const queriesContainer = document.getElementById('queriesContainer');
+        const queriesTextarea = document.getElementById('queriesTextarea');
+        const generateBtn = document.getElementById('generateBtn');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const statusDiv = document.getElementById('status');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const resultsTitle = document.getElementById('resultsTitle');
+        const tsezkiList = document.getElementById('tsezkiList');
+
+        const stage2 = document.getElementById('stage2');
+
+
+        /**
+         * Утыліта для адлюстравання статусу або памылак
+         * @param {string} message - паведамленне для адлюстравання
+         * @param {string} type - 'loading', 'success', 'error'
+         */
+        function showStatus(message, type = 'loading') {
+            statusDiv.textContent = message;
+            statusDiv.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
+
+            switch (type) {
+                case 'loading':
+                    statusDiv.classList.add('bg-blue-100', 'text-blue-700');
+                    break;
+                case 'success':
+                    statusDiv.classList.add('bg-green-100', 'text-green-700');
+                    break;
+                case 'error':
+                    statusDiv.classList.add('bg-red-100', 'text-red-700');
+                    break;
+            }
+            statusDiv.classList.remove('hidden');
+        }
+
+        /**
+         * Блакаванне/разблакаванне элементаў і змена выгляду для Этапу 2
+         * @param {boolean} enable
+         */
+        function toggleStage2(enable) {
+            if (enable) {
+                stage2.classList.remove('opacity-50', 'pointer-events-none');
+                analyzeBtn.disabled = false;
+            } else {
+                stage2.classList.add('opacity-50', 'pointer-events-none');
+                analyzeBtn.disabled = true;
+            }
+        }
+
+        /**
+         * Этап 1: Звяртаецца да API для генерацыі пошукавых запытаў.
+         */
+        async function handleGenerateQueries() {
+            const task = taskInput.value.trim();
+            if (!task) {
+                showStatus("Калі ласка, увядзіце задачу для аналізу.", 'error');
+                return;
+            }
+
+            generateBtn.disabled = true;
+            queriesContainer.classList.add('hidden');
+            toggleStage2(false);
+            showStatus("Генерацыя аптымальнай пошукавай стратэгіі...", 'loading');
+
+            // Ачыстка папярэдніх вынікаў
+            tsezkiList.innerHTML = '';
+            resultsTitle.classList.add('hidden');
+
+
+            try {
+                const response = await fetch(GENERATE_QUERIES_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ task }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Невядомая памылка пры генерацыі запытаў.");
+                }
+
+                if (data.queries && data.queries.length > 0) {
+                    queriesTextarea.value = data.queries.join('\n');
+                    queriesContainer.classList.remove('hidden');
+                    showStatus(`Згенеравана ${data.queries.length} запытаў. Праверце і націсніце "Запусціць Аналіз".`, 'success');
+                    toggleStage2(true);
+                } else {
+                    queriesTextarea.value = "";
+                    queriesContainer.classList.add('hidden');
+                    showStatus("Штучны інтэлект не змог згенераваць запыты. Паспрабуйце ўвесці больш канкрэтную задачу.", 'error');
+                }
+
+            } catch (error) {
+                console.error('Памылка Генерацыі Запытаў:', error);
+                showStatus(`Памылка: ${error.message}`, 'error');
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+
+        /**
+         * Этап 2: Звяртаецца да API для выканання пошуку і сінтэзу дадзеных.
+         */
+        async function handleRunAnalysis() {
+            // У якасці задачы для Этапу 2 выкарыстоўваем скарэктаваны спіс запытаў
+            const taskOrQueries = queriesTextarea.value.trim();
+
+            if (!taskOrQueries) {
+                showStatus("Спіс запытаў пусты. Спачатку згенеруйце іх.", 'error');
+                return;
+            }
+
+            analyzeBtn.disabled = true;
+            generateBtn.disabled = true;
+            showStatus("Запуск комплекснага OSINT-аналізу і агрэгацыі дадзеных...", 'loading');
+            tsezkiList.innerHTML = ''; // Ачыстка папярэдніх вынікаў
+            resultsTitle.classList.add('hidden');
+
+            try {
+                const response = await fetch(ANALYZE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // Адпраўляем скарэктаваны спіс запытаў як поўную задачу/запыт для аналізу
+                    body: JSON.stringify({ fullName: taskOrQueries }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Невядомая памылка пры выкананні аналізу.");
+                }
+
+                renderResults(data.tsezki);
+
+            } catch (error) {
+                console.error('Памылка Аналізу:', error);
+                showStatus(`Памылка: ${error.message}`, 'error');
+            } finally {
+                analyzeBtn.disabled = false;
+                generateBtn.disabled = false;
+            }
+        }
+
+        /**
+         * Адлюстраванне атрыманых tsezki ў UI.
+         * @param {Array<Tsezka>} tsezki - Масіў вынікаў аналізу
+         */
+        function renderResults(tsezki) {
+            tsezkiList.innerHTML = '';
+            resultsTitle.classList.remove('hidden');
+
+            if (tsezki.length === 0) {
+                tsezkiList.innerHTML = `
+                    <div class="bg-yellow-100 dark:bg-yellow-900 border border-yellow-500 p-4 rounded-lg text-center text-yellow-700 dark:text-yellow-300">
+                        Нічога не знойдзена па зададзеных запытах. Паспрабуйце адкарэктаваць спіс запытаў (Крок 1) і паўтарыць.
+                    </div>
+                `;
+                showStatus("Аналіз завершаны.", 'success');
+                return;
+            }
+
+            tsezki.forEach((tsezka, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3 border-b pb-2 border-gray-200 dark:border-gray-700">
+                        <h3 class="text-xl font-bold text-indigo-500">${tsezka.name} <span class="text-sm font-normal text-gray-500 dark:text-gray-400">(${tsezka.region || 'Невядомы рэгіён'})</span></h3>
+                        <span class="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300">Профіль #${index + 1}</span>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex">
+                            <span class="w-32 font-semibold text-gray-600 dark:text-gray-300">Дзейнасць:</span>
+                            <span class="flex-1">${tsezka.activity || 'Дадзеныя адсутнічаюць'}</span>
+                        </div>
+                        <div class="flex">
+                            <span class="w-32 font-semibold text-gray-600 dark:text-gray-300">Верагоднасць:</span>
+                            <span class="flex-1 text-green-600 dark:text-green-400">${tsezka.certainty || 'Не пазначана'}</span>
+                        </div>
+                        <div class="flex">
+                            <span class="w-32 font-semibold text-gray-600 dark:text-gray-300">Крыніца:</span>
+                            <a href="${tsezka.url}" target="_blank" class="flex-1 text-indigo-500 hover:text-indigo-400 truncate" title="${tsezka.url}">
+                                ${tsezka.url || 'Не пазначана'}
+                            </a>
+                        </div>
+                    </div>
+                `;
+                tsezkiList.appendChild(card);
+            });
+            showStatus(`Аналіз завершаны. Знойдзена ${tsezki.length} унікальных профіляў.`, 'success');
+        }
+
+        // Ініцыялізацыя: пасля загрузкі старонкі
+        document.addEventListener('DOMContentLoaded', () => {
+            // Па змаўчанні, пераключаем Этап 2 у неактыўны стан
+            toggleStage2(false);
+        });
+
+    </script>
+</body>
+
+</html>
