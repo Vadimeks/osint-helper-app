@@ -1,0 +1,27 @@
+{
+  "caseId": "case-ba992e94-3541-41d1-a53d-e848abaad8fe",
+  "task": "Сіманаў Вадзім Юр'евіч",
+  "generatedQueries": [
+    "\"Сіманаў Вадзім Юр'евіч\"",
+    "\"Симанов Вадим Юрьевич\"",
+    "\"Vadzim Simanau\" Belarus",
+    "\"Vadim Simanov\" site:linkedin.com OR site:vk.com OR site:ok.ru",
+    "\"Симанов Вадим Юрьевич\" директор OR учредитель",
+    "\"Сіманаў Вадзім Юр'евіч\" Мінск",
+    "\"Симанов Вадим Юрьевич\" УНП OR ОАО OR ООО",
+    "\"Vadim Simanov\" news OR interview"
+  ],
+  "collectedData": [
+    {
+      "query": "\"Vadzim Simanau\" Belarus",
+      "url": "https://maltamarathon.com/wp-content/uploads/2024/11/2018-hm-results.pdf",
+      "snippet": "BLR Irun Belarus. 109 Romain R. Remy. 1:26:04 1:25:01 M. 105 M23-34. 39. FRA ... 802 Vadzim Simanau. 1:48:38 1:46:56 M. 709 M23-34 213. BLR Youcanrunminsk. 803 ...",
+      "title": "2018 Vodafone Malta Half Marathon official results - 25th February",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:48:32.587Z"
+    }
+  ],
+  "analysis": "[{\"description\":\"An individual named Vadzim Simanau from Belarus, who participated in the 2018 Vodafone Malta Half Marathon representing the 'Youcanrunminsk' club.\",\"mainData\":{\"fullName\":\"Сіманаў Вадзім Юр'евіч\",\"possibleNicknames\":[\"Vadzim Simanau\"],\"dateOfBirth\":\"Estimated between February 1984 and February 1995 (based on M23-34 age group in Feb 2018).\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Belarus\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"Minsk, Belarus (inferred from 'Youcanrunminsk' club)\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[\"Runner for Youcanrunminsk (as of 2018)\"],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[\"Listed in the official results of the 2018 Vodafone Malta Half Marathon.\"],\"dataBreaches\":\"N/A\",\"achievements\":[\"Completed the 2018 Vodafone Malta Half Marathon with a net time of 1:46:56.\"]},\"conclusion\":\"This profile pertains to Vadzim Simanau, a Belarusian runner who was between 23 and 34 years old as of February 2018. His association with the 'Youcanrunminsk' club suggests a connection to Minsk. The only available information relates to his participation in a single sporting event. The source does not provide a patronymic (Yur'evich), so the match to the queried person is based on the first and last name only.\",\"accuracyAssessment\":\"LOW. The identification is based on a single public record of a sporting event. While the name and nationality match, the lack of a patronymic or other unique identifiers means it's not possible to definitively confirm this is the specific 'Сіманаў Вадзім Юр'евіч' from the query. No other lookalikes were found in the provided data.\",\"additionalInfo\":\"Competed in the M23-34 age category in the 2018 Vodafone Malta Half Marathon.\",\"sources\":[\"https://maltamarathon.com/wp-content/uploads/2024/11/2018-hm-results.pdf\"]}]",
+  "createdAt": 1761601697671,
+  "updatedAt": 1761601738610
+}

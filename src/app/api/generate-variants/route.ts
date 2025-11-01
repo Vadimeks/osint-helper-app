@@ -41,7 +41,8 @@ async function fetchWithRetry(
     }
 
     return response;
-  } catch (_e) {
+  } catch (_) {
+    // !!! ВЫПРАЎЛЕННЕ: _ замест _e !!!
     if (attempt < MAX_RETRIES) {
       const delay = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
       await new Promise((resolve) => setTimeout(resolve, delay));
@@ -69,23 +70,23 @@ Your task is to generate a comprehensive set of variants based on a full name pr
 
 You MUST return three arrays:
 1. nameVariants — all possible name spellings and transliterations:
-   - Cyrillic: Russian, Ukrainian, Belarusian
-   - Latin: English-style, Ukrainian-style, Belarusian-style
-   - Partial forms: First + Patronymic, Last + First, Initials (e.g., S.V. Medvedev)
+   - Cyrillic: Russian, Ukrainian, Belarusian
+   - Latin: English-style, Ukrainian-style, Belarusian-style
+   - Partial forms: First + Patronymic, Last + First, Initials (e.g., S.V. Medvedev)
 
 2. emailVariants — realistic email address guesses based on common patterns:
-   - Gmail, Yandex, Mail.ru, Protonmail, Outlook
-   - Formats like: medvedev.sv@..., s.medvedev@..., sergey.v.medvedev@...
+   - Gmail, Yandex, Mail.ru, Protonmail, Outlook
+   - Formats like: medvedev.sv@..., s.medvedev@..., sergey.v.medvedev@...
 
 3. usernameVariants — likely usernames or handles for social platforms:
-   - VK, Telegram, Instagram, Facebook, LinkedIn, GitHub, TikTok
-   - Formats like: medvedev_sv, sergeymedvedev, medvedev1979, s.v.medvedev
+   - VK, Telegram, Instagram, Facebook, LinkedIn, GitHub, TikTok
+   - Formats like: medvedev_sv, sergeymedvedev, medvedev1979, s.v.medvedev
 
 You MUST return a single JSON object with this schema:
 {
-  "nameVariants": [...],
-  "emailVariants": [...],
-  "usernameVariants": [...]
+  "nameVariants": [...],
+  "emailVariants": [...],
+  "usernameVariants": [...]
 }
 
 Do NOT include any extra text or explanation. Respond ONLY with the JSON object inside a markdown block: \`\`\`json{...}\`\`\`
@@ -128,7 +129,8 @@ Do NOT include any extra text or explanation. Respond ONLY with the JSON object 
 
     try {
       parsedResult = JSON.parse(cleanJsonText);
-    } catch (_e) {
+    } catch (_) {
+      // !!! ВЫПРАЎЛЕННЕ: _ замест _e !!!
       throw new Error("Памылка разбору дадзеных: некарэктны JSON.");
     }
 

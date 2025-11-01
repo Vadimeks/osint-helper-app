@@ -1,10 +1,23 @@
 // src/app/api/analyze/route.ts
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+// !!! ВАЖНА: ІМПАРТ ФУНКЦЫІ ДЛЯ ПРАЦЫ З ДАНЫМІ
+import { getCase } from "@/backend/dataStore";
+interface CaseEntry {
+  query: string;
+  content: string;
+  url?: string;
+}
 
-// Выкарыстоўваем працэсныя зменныя асяроддзя (напрыклад, GEMINI_API_KEY з .env.local)
-// Зменіце 'GEMINI_API_KEY' на фактычнае імя вашай зменнай!
+interface CaseData {
+  id: string;
+  task: string;
+  queries: string[];
+  entries: CaseEntry[]; // <-- Гэта выпраўляе памылку "Property 'entries' does not exist"
+}
+// Выкарыстоўваем працэсныя зменныя асяроддзя
 const API_KEY = process.env.GEMINI_API_KEY;
+// Захоўваем вашу мадэль, але рэкамендую 'gemini-2.5-pro' для сінтэзу
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
 const MAX_RETRIES = 5;
 
@@ -13,18 +26,16 @@ interface Tsezka {
   name: string;
   region: string;
   activity: string;
-  certainty: string;
+  certainty: "High" | "Medium" | "Low"; // Удакладняем тып для лепшага кантролю
   url: string;
 }
 
 /**
  * [ФУНКЦЫЯ ВЫПРАЎЛЕННЯ]
  * Здабывае першы знойдзены JSON-блок з радка.
- * (Код extractJson тут і ў generate-queries павінен быць аб'яднаны,
- * але пакуль пакідаем так, каб выправіць праблему)
+ * (Ваш код extractJson)
  */
 function extractJson(text: string): string {
-  // ... (Ваш код extractJson застаецца тут)
   // 1. Пошук блокаў у фармаце ```json...```
   const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
   if (jsonMatch && jsonMatch[1]) {
@@ -48,13 +59,13 @@ function extractJson(text: string): string {
 
 /**
  * Выконвае POST-запыт да Gemini API з экспаненцыяльным адкатам (Exponential Backoff).
+ * (Ваш код fetchWithRetry)
  */
 async function fetchWithRetry(
   url: string,
   payload: Record<string, unknown>,
   attempt: number = 0
 ): Promise<Response> {
-  // ... (Ваш код fetchWithRetry застаецца тут)
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -89,91 +100,109 @@ async function fetchWithRetry(
     throw new Error(`Не атрымалася звязацца з API пасля ${MAX_RETRIES} спроб.`);
   }
 }
-// [Канец функцый]
+// [Канец дапаможных функцый]
 
 /**
- * Апрацоўка POST-запыту для выканання OSINT-аналізу з выкарыстаннем Gemini API.
+ * Апрацоўка POST-запыту для ВЫКАНАННЯ СІНТЭЗУ дадзеных OSINT.
+ * Цяпер прымае caseId і выцягвае ўсе сабраныя дадзеныя.
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    // 1. Атрыманне дадзеных
-    const { fullName } = await request.json();
-    if (!fullName) {
+    // 1. АТРЫМАННЕ caseId
+    const { caseId } = await request.json(); // !!! МЯНЯЕМ fullName НА caseId
+
+    if (!caseId) {
       return NextResponse.json(
-        { error: "Поўнае імя не пазначана." },
+        { error: "Патрабуецца caseId для выканання аналізу." },
         { status: 400 }
       );
-    } // Сістэмная інструкцыя - узмацняем патрабаванне ТОЛЬКІ JSON
+    } // 2. ЧЫТАННЕ ЎСІХ САБРАНЫХ ДАНЫХ
+
+    const currentCase = getCase(caseId) as unknown as CaseData; // <-- ДАДАЕМ CaseData
+    const allContent: string = currentCase.entries
+      .map(
+        (entry: CaseEntry) =>
+          `--- Крыніца (${entry.url || "Manual Input"}, Запыт: ${
+            entry.query
+          }):\n${entry.content}\n---`
+      )
+      .join("\n\n");
+
+    if (allContent.trim().length === 0) {
+      return NextResponse.json(
+        {
+          error:
+            "Няма дадзеных для аналізу. Спачатку збярыце дадзеныя (Крок 2).",
+        },
+        { status: 404 }
+      );
+    } // 3. СІСТЭМНАЯ ІНСТРУКЦЫЯ ДЛЯ СІНТЭЗУ
 
     const systemPrompt = `
-        You are a highly qualified OSINT analyst. Your task is to conduct a THOROUGH search using Google Search, Yandex, and Bing, DuckDuckGo and other, based on the user's name/task.
-        
-        STRICT NAME MATCHING: You MUST include in the results ONLY those individuals whose FULL NAME (First name, Patronymic, Last name) EXACTLY matches the query. Patronymic MUST match exactly.
-        
-        SEARCH EXECUTION: Automatically execute search queries covering all major name permutations (FIO, IFO), Cyrillic (Russian, Belarusian, Ukrainian), and Latin transliterations implied by the task.
+You are an expert OSINT analyst. Your task is to analyze the raw, collected data provided below, which includes automated search results and manual inputs, and synthesize it into structured intelligence profiles ("Tsezki").
 
-        COMPREHENSIVE SYNTHESIS (CRITICAL): You MUST aggregate and synthesize ALL relevant and unique information found across ALL search results into a single, comprehensive list of 'tsezki'. Every unique profile found for the subject MUST be detailed, covering all roles and facts (e.g., "IP" and "Sports Coordinator" must be combined into one detailed 'activity' field for one individual). If multiple distinct individuals match the full name (e.g., same name, different region), they MUST ALL be returned as separate objects in the 'tsezki' array.
+STRICTLY follow these rules:
+1. Identify unique individuals or entities mentioned in the RAW COLLECTED DATA.
+2. For each unique entity, create one "Tsezka" object.
+3. The response MUST be a single JSON object containing the "tsezki" array conforming EXACTLY to the specified TypeScript interface.
+4. DO NOT include any text, notes, or explanations outside the JSON block.
 
-        SEARCH SCOPE & REGIONAL DEEP DIVE: Search for matches by full name in Russia, Belarus, Ukraine, and the Russian-speaking diaspora worldwide, focusing on official regional data sources (ЕГРИП, ФНС, ФЕДРЕСУРС, ЕГР).
+Tsezka Interface:
+interface Tsezka {
+ name: string; // The full name or entity title
+ region: string; // Geographic location or region
+ activity: string; // A concise summary of their main professional or online activities, based ONLY on the collected data.
+ certainty: 'High' | 'Medium' | 'Low'; // Confidence level that the data belongs to the target person/entity.
+ url: string; // The most relevant URL/source for this profile. Use the "Source" URL from the collected data.
+}
 
-        OUTPUT REQUIREMENT: For each matching individual, you must provide: 1) Name, 2) Region, 3) Activity, 4) Certainty assessment (with reasoning), and 5) Source URL.
+Respond ONLY in Belarusian or Russian in the 'activity' and 'name' fields, and use the exact values 'High', 'Medium', or 'Low' in the 'certainty' field.
+`;
+    const userQuery = `
+RAW COLLECTED DATA (Manual Input and Search Results):
 
-        If NO profiles are found, you MUST return the following JSON structure: {"tsezki": []}
+${allContent}
 
-        YOUR ENTIRE RESPONSE MUST BE A SINGLE JSON OBJECT CONTAINED WITHIN A MARKDOWN BLOCK: \`\`\`json{...}\`\`\`. DO NOT ADD ANY EXTRA TEXT OR EXPLANATIONS.
-        
-        The JSON structure MUST follow this schema:
-        {"tsezki": [{"name": "...", "region": "...", "activity": "...", "certainty": "...", "url": "..."}]}
-        Respond ONLY in Belarusian or Russian in the 'certainty' field.
-    `;
-
-    const userQuery = `Perform an OSINT analysis based on the following task: "${fullName}". Display all discovered information in JSON format, strictly following the structure specified in the system instruction`; // 3. Падрыхтоўка payload
+Please analyze the data and generate the final JSON object containing the 'tsezki' array.
+`; // 4. ПАДРЫХТОЎКА PAYLOAD
 
     const payload = {
-      // Змесціва запыту
       contents: [
         {
           role: "user",
-          parts: [
-            {
-              text: userQuery,
-            },
-          ],
+          parts: [{ text: userQuery }],
         },
-      ], // Уключэнне Google Search для Grounding (OSINT)
+      ], // !!! ВАЖНА: ПАВІННА БЫЦЬ БЕЗ GOOGLE SEARCH TOOL // tools: [{ google_search: {} }], // <--- ГЭТА ТРЭБА ВЫДАЛІЦЬ!
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "object",
+          properties: {
+            tsezki: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  region: { type: "string" },
+                  activity: { type: "string" },
+                  certainty: {
+                    type: "string",
+                    enum: ["High", "Medium", "Low"],
+                  },
+                  url: { type: "string" },
+                },
+                required: ["name", "region", "activity", "certainty", "url"],
+              },
+            },
+          },
+          required: ["tsezki"],
+        },
+        temperature: 0.1, // Нізкая тэмпература для структураванага выніку
+      },
+    }; // 5. Выкананне API-запыту
 
-      tools: [{ google_search: {} }], // Сістэмная інструкцыя для ўстаноўкі ролі
-
-      systemInstruction: {
-        parts: [{ text: systemPrompt }],
-      }, // Дадаем JSON Schema, якой не хапала, каб узмацніць кантроль, як у generate-queries
-
-      //   generationConfig: {
-      //     responseMimeType: "application/json",
-      //     responseSchema: {
-      //       type: "OBJECT",
-      //       properties: {
-      //         tsezki: {
-      //           type: "ARRAY",
-      //           items: {
-      //             type: "OBJECT",
-      //             properties: {
-      //               name: { type: "STRING" },
-      //               region: { type: "STRING" },
-      //               activity: { type: "STRING" },
-      //               certainty: { type: "STRING" },
-      //               url: { type: "STRING" },
-      //             },
-      //             required: ["name", "region", "activity", "certainty", "url"],
-      //           },
-      //         },
-      //       },
-      //       required: ["tsezki"],
-      //     },
-      //   },
-    }; // ... (далейшы код не змяніўся)
-
-    // 4. Выкананне API-запыту
     const apiResponse = await fetchWithRetry(API_URL, payload);
 
     if (!apiResponse.ok) {
@@ -189,9 +218,9 @@ export async function POST(request: Request) {
       throw new Error("API не вярнуў змесціва ў адказе.");
     }
 
-    const resultJsonText: string = candidate.content.parts[0].text; // --- 5. Разбор JSON і падрыхтоўка адказу ---
+    const resultJsonText: string = candidate.content.parts[0].text; // 6. Разбор JSON
 
-    const cleanJsonText = extractJson(resultJsonText); // Паспрабуем разабраць JSON
+    const cleanJsonText = extractJson(resultJsonText);
 
     let parsedResult: { tsezki?: Tsezka[] };
     try {
@@ -202,7 +231,7 @@ export async function POST(request: Request) {
       throw new Error(
         `Памылка разбору дадзеных (SyntaxError): LLM вярнуў некарэктны JSON.`
       );
-    } // Праверка наяўнасці ўласцівасці 'tsezki'
+    }
 
     if (!parsedResult || !Array.isArray(parsedResult.tsezki)) {
       console.error("Атрыманы аб'ект:", parsedResult);
@@ -219,12 +248,11 @@ export async function POST(request: Request) {
     let errorMessage =
       "Унутраная памылка сервера. Магчыма, LLM не змог згенераваць карэктны JSON. Паспрабуйце змяніць запыт.";
     if (error instanceof Error) {
-      // Спецыяльная апрацоўка для памылак парсінгу JSON
       if (error.name === "SyntaxError") {
         errorMessage = `Памылка разбору дадзеных (SyntaxError): LLM вярнуў некарэктны JSON. Калі ласка, удакладніце запыт.`;
       } else {
         errorMessage = error.message;
-      } // Спрабуем вярнуць 400, калі гэта відавочна памылка Bad Request, // якая прайшла праз нашу логіку паўтору.
+      }
 
       if (errorMessage.includes("400")) {
         return NextResponse.json({ error: errorMessage }, { status: 400 });

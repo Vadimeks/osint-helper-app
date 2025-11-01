@@ -1,0 +1,18 @@
+{
+  "caseId": "case-3b87751a-8c21-448d-b53a-a7b63435a6fe",
+  "task": "simanau vadzim",
+  "generatedQueries": [
+    "\"Vadzim Simanau\"",
+    "\"Вадим Симанов\"",
+    "\"Вадзім Сіманаў\"",
+    "\"Vadzim Simanau\" site:linkedin.com",
+    "\"Vadzim Simanau\" site:vk.com OR site:facebook.com",
+    "\"Vadim Simanov\"",
+    "\"Vadzim Simanau\" Belarus",
+    "\"Vadzim Simanau\" CV resume"
+  ],
+  "collectedData": [],
+  "analysis": null,
+  "createdAt": 1761684836772,
+  "updatedAt": 1761684836772
+}

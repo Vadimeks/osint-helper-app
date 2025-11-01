@@ -1,36 +1,16 @@
 // src/app/api/generate-queries/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
+import { dataStore } from "@/lib/dataStore";
+// ❗ ВЫПРАЎЛЕННЕ: Імпартуем SearchQuery для правільнай тыпізацыі пустога масіва
+import { SearchQuery } from "@/types/osint";
 
-// Калі вы яшчэ не выправілі ключ, зрабіце гэта:
-// Выкарыстоўваем працэсныя зменныя асяроддзя (напрыклад, GEMINI_API_KEY з .env.local)
+// Выкарыстоўваем працэсныя зменныя асяроддзя
 const API_KEY = process.env.GEMINI_API_KEY;
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
 const MAX_RETRIES = 5;
 
-// [Функцыі extractJson і fetchWithRetry застаюцца без зменаў]
-function extractJson(text: string): string {
-  // 1. Пошук блокаў у фармаце ```json...```
-  const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
-  if (jsonMatch && jsonMatch[1]) {
-    return jsonMatch[1].trim();
-  } // 2. Пошук масіва [ ... ]
-
-  const start = text.indexOf("[");
-  const end = text.lastIndexOf("]");
-  if (start !== -1 && end !== -1 && end > start) {
-    return text.substring(start, end + 1).trim();
-  } // 3. Пошук аб'екта { ... }
-
-  const objStart = text.indexOf("{");
-  const objEnd = text.lastIndexOf("}");
-  if (objStart !== -1 && objEnd !== -1 && objEnd > objStart) {
-    return text.substring(objStart, objEnd + 1).trim();
-  } // 4. Калі нічога не знойдзена, вяртаем зыходны тэкст
-
-  return text;
-}
-
+// Абноўленая функцыя fetchWithRetry
 async function fetchWithRetry(
   url: string,
   payload: Record<string, unknown>,
@@ -70,128 +50,130 @@ async function fetchWithRetry(
     throw new Error(`Не атрымалася звязацца з API пасля ${MAX_RETRIES} спроб.`);
   }
 }
-// [Канец функцый]
+
+/**
+ * Разбірае тэкст ад мадэлі, здабывае масіў запытаў і фільтруе несапраўдныя запісы.
+ */
+function extractQueries(text: string): string[] {
+  const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
+  const jsonText = jsonMatch ? jsonMatch[1].trim() : text.trim();
+
+  let potentialQueries: unknown[] = [];
+
+  try {
+    const parsed = JSON.parse(jsonText); // Спрабуем атрымаць масіў з поля "queries"
+    if (Array.isArray(parsed.queries)) {
+      potentialQueries = parsed.queries;
+    } else if (Array.isArray(parsed)) {
+      // Спрабуем разабраць як просты масіў
+      potentialQueries = parsed;
+    }
+  } catch (error) {
+    console.warn("Не атрымалася разабраць JSON, які вярнула мадэль:", error);
+    return []; // Вяртаем пусты масіў у выпадку памылкі разбору
+  } // ❗ КЛЮЧАВОЕ ВЫПРАЎЛЕННЕ: Фільтруем несапраўдныя значэнні
+
+  const validQueries = potentialQueries.filter((q): q is string => {
+    // Захоўваем толькі радкі
+    if (typeof q === "string") {
+      const trimmed = q.trim(); // Выключаем пустыя радкі І радок "undefined"
+      return trimmed.length > 0 && trimmed.toLowerCase() !== "undefined";
+    }
+    return false; // Выключаем null, undefined, number, object і г.д.
+  });
+
+  return validQueries;
+}
 
 export async function POST(req: NextRequest) {
   try {
+    if (!API_KEY) {
+      throw new Error("GEMINI_API_KEY не знойдзены.");
+    }
+
     const { task } = await req.json();
 
     if (!task || typeof task !== "string") {
       return NextResponse.json(
-        { error: "Патрабуецца поле 'task' (задача аналізу)." },
+        { error: "Патрабуецца поле 'task'." },
         { status: 400 }
       );
     }
 
-    // УЗМАЦНЕНАЯ Сістэмная інструкцыя
-    const systemPrompt = `
-YOU MUST ONLY RESPOND WITH THE JSON OBJECT THAT CONTAINS THE 'queries' ARRAY. DO NOT ADD ANY EXTRA TEXT, EXPLANATIONS, OR CONVERSATIONAL PHRASES.
+    const caseId = "case-" + crypto.randomUUID();
 
-Act as an expert OSINT analyst. The user provides a name or object (e.g., "Медведев Сергей Викторович").
+    const systemInstruction = `
+You are an expert OSINT analyst. Your goal is to convert a complex OSINT task into 5-10 highly effective Google search queries.
+The user's task is: "${task}".
 
-Your task is to generate 15–20 highly effective, targeted Google search queries to start a full-spectrum investigation.
+Think step-by-step:
+1. Identify the key entity (person, organization, etc.).
+2. Extract all identifying information (names, locations, dates, positions, company names).
+3. Generate 5-10 unique, highly specific search strings that combine the identifying information in various ways (e.g., "Full Name" + "Company Name", "Location" + "Date of Birth").
+4. Include both Cyrillic and Latin spellings if applicable (e.g., for names/company names).
 
-You MUST include:
-- Cyrillic variants: Russian, Ukrainian, Belarusian
-- Latin transliterations: English-style, Ukrainian-style, Belarusian-style
-- Partial name combinations: First + Patronymic, Last + First, Initials
-- Advanced operators: site:, filetype:, intitle:, inurl:, OR, AND, quoted phrases
+Your response MUST be a single JSON object containing a list of queries. Do NOT include any extra text.
 
-Cover multiple dimensions:
-- Personal data (ИНН, СНИЛС, дата рождения, адрес)
-- Legal and business records (ЕГРЮЛ, учредитель, директор, суды)
-- Social media (site:vk.com, site:ok.ru, site:facebook.com, site:linkedin.com)
-- Multimedia (site:youtube.com, интервью, выступление)
-- Documents (filetype:pdf, резюме, анкета)
-- News and scandals (новости, задержан, скандал)
-- Connections (связи, партнеры, семья)
-- Sanctions and OSINT mentions
-
-The output MUST follow this schema:
+Example format:
+\`\`\`json
 {
-  "queries": [ "..." ]
+    "queries": [
+        "Сергеев Иван Петрович Минск",
+        "Ivan Sergeev CEO Progress OOO",
+        "Сергеев Иван Петрович 1975"
+    ]
 }
+\`\`\`
 `;
 
     const payload = {
       contents: [
-        {
-          parts: [{ text: `Generate search queries for the task: "${task}"` }],
-        },
+        { parts: [{ text: `Generate queries for OSINT task: "${task}"` }] },
       ],
-      systemInstruction: { parts: [{ text: systemPrompt }] },
-      generationConfig: {
-        // Гэта ўсё яшчэ самы важны кантроль
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "OBJECT",
-          properties: {
-            queries: {
-              type: "ARRAY",
-              items: { type: "STRING" },
-            },
-          },
-          required: ["queries"],
-        },
-      },
+      systemInstruction: { parts: [{ text: systemInstruction }] },
+      generationConfig: { temperature: 0.2 },
     };
 
     const apiResponse = await fetchWithRetry(API_URL, payload);
 
     if (!apiResponse.ok) {
       const errorDetails = await apiResponse.text();
-      console.error("API Error Response:", apiResponse.status, errorDetails);
-      throw new Error(`Памылка API: Код ${apiResponse.status}`);
+      throw new Error(
+        `Памылка LLM API: Код ${apiResponse.status}. ${errorDetails}`
+      );
     }
 
     const result = await apiResponse.json();
-    const candidate = result.candidates?.[0];
+    const resultText = result.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    if (!candidate || !candidate.content?.parts?.[0]?.text) {
-      throw new Error("API не вярнуў змесціва ў адказе.");
+    if (!resultText) {
+      throw new Error("Мадэль не змагла згенераваць запыты.");
     }
 
-    const resultJsonText: string = candidate.content.parts[0].text;
-    const cleanJsonText = extractJson(resultJsonText);
+    const generatedQueries = extractQueries(resultText);
 
-    // --- ЗМЕНЕНЫ БЛОК ДЛЯ АПРАЦОЎКІ АБОДВУХ ФАРМАТАЎ JSON ---
-    let parsedResult: unknown;
-    try {
-      parsedResult = JSON.parse(cleanJsonText);
-    } catch (_e) {
-      console.error("Сыры тэкст LLM:", resultJsonText);
-      console.error("Ачышчаны тэкст:", cleanJsonText);
-      throw new Error(
-        `Памылка разбору дадзеных (SyntaxError): LLM вярнуў некарэктны JSON.`
-      );
+    if (generatedQueries.length === 0) {
+      throw new Error("Мадэль вярнула пусты або несапраўдны спіс запытаў.");
     }
 
-    let queries: string[] | undefined;
+    const newCase = {
+      caseId: caseId,
+      task: task,
+      generatedQueries: generatedQueries,
+      collectedData: [] as SearchQuery[],
+      analysis: null as string | null,
+    };
 
-    // Сцэнар А: LLM вярнуў поўны аб'ект {"queries": [...]}.
-    if (
-      typeof parsedResult === "object" &&
-      parsedResult !== null &&
-      "queries" in parsedResult &&
-      Array.isArray((parsedResult as { queries?: unknown }).queries)
-    ) {
-      queries = (parsedResult as { queries: string[] }).queries;
-    }
-    // Сцэнар Б: LLM вярнуў толькі чысты масіў [...], як паказана ў логах.
-    else if (Array.isArray(parsedResult)) {
-      queries = parsedResult as string[];
-    }
+    await dataStore.addCase(newCase);
 
-    if (!queries || !Array.isArray(queries)) {
-      // Калі абодва сцэнарыі не спрацавалі, выкідваем памылку.
-      console.error("Атрыманы аб'ект:", parsedResult);
-      throw new Error(
-        "Няправільны фармат JSON-адказу ад LLM: адсутнічае масіў 'queries' або няслушная структура."
-      );
-    }
+    console.log(
+      `✅ Створана сэсія ${caseId} з ${generatedQueries.length} запытамі.`
+    );
 
-    return NextResponse.json({ queries });
-    // --- КАНЕЦ ЗМЕНЕНАГА БЛОКА ---
+    return NextResponse.json({
+      caseId: newCase.caseId,
+      queries: newCase.generatedQueries,
+    });
   } catch (error) {
     console.error("Памылка ў API-маршруце generate-queries:", error);
     const errorMessage =

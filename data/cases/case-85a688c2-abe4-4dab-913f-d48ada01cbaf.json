@@ -1,0 +1,18 @@
+{
+  "caseId": "case-85a688c2-abe4-4dab-913f-d48ada01cbaf",
+  "task": "dsfgg",
+  "generatedQueries": [
+    "\"dsfgg\"",
+    "\"dsfgg\" site:twitter.com OR site:reddit.com",
+    "\"dsfgg\" site:github.com OR site:pastebin.com",
+    "inurl:\"dsfgg\"",
+    "\"dsfgg\" error code",
+    "\"dsfgg\" meaning",
+    "\"dsfgg\" filetype:log OR filetype:txt",
+    "dsfgg password leak"
+  ],
+  "collectedData": [],
+  "analysis": null,
+  "createdAt": 1761599850479,
+  "updatedAt": 1761599850479
+}

@@ -1,0 +1,26 @@
+{
+  "caseId": "case-c471aab0-35d6-4042-88c2-84c1ecdf5392",
+  "task": "Yablunivska Inna",
+  "generatedQueries": [
+    "\"Yablunivska Inna\"",
+    "\"Яблунівська Інна\"",
+    "\"Inna Yablunivska\" LinkedIn OR CV OR resume",
+    "\"Inna Yablonovskaya\" Facebook OR Instagram",
+    "\"Яблунівська Інна\" Київ OR Львів",
+    "\"Yablunivska Inna\" university OR ministry OR NGO",
+    "\"Inna Yablunivska\" email OR phone"
+  ],
+  "collectedData": [
+    {
+      "query": "\"Яблунівська Інна\"",
+      "url": "https://timer.newrun.com.ua/results/race/575",
+      "snippet": "2291, Яблунівська Інна, 1981, Миронівка. 201, 01:58:52, 2387, Поляков Михайло, 1998, Київ. 202, 01:59:19, 2323, Луговий Сергій, 1979, Київ. 203, 01:59:20, 2199 ...",
+      "title": "Untitled",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:53:43.182Z"
+    }
+  ],
+  "analysis": "[{\"description\":\"An individual named Yablunivska Inna, born in 1981 and associated with the location Myronivka, identified from a race results list.\",\"mainData\":{\"fullName\":\"Яблунівська Інна\",\"possibleNicknames\":[],\"dateOfBirth\":\"1981\",\"placeOfBirth\":\"Миронівка\",\"citizenship\":\"N/A\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"Миронівка\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[\"Listed as a participant in a race with bib number 2291.\"],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"The provided data points to a single individual, Yablunivska Inna, born in 1981, from Myronivka. The only information available is her participation in a race, as listed on the timer.newrun.com.ua website. No other personal, professional, or social media details were found in the source material, making it impossible to build a more comprehensive profile or identify other lookalikes.\",\"accuracyAssessment\":\"LOW. The information is based on a single, uncorroborated source which appears to be a public list of race participants. While the data (name, year of birth, location) is specific, its context is very limited and lacks verification from other sources.\",\"additionalInfo\":\"Participant number in the race was 2291.\",\"sources\":[\"https://timer.newrun.com.ua/results/race/575\"]}]",
+  "createdAt": 1761601991589,
+  "updatedAt": 1761602040793
+}

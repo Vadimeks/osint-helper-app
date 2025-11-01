@@ -1,0 +1,339 @@
+{
+  "caseId": "case-4b284ec6-0dc7-4913-8e86-15e73db82c40",
+  "task": "osint sergey viktorovich",
+  "generatedQueries": [
+    "\"Сергей Викторович\"",
+    "\"Сергей Викторович\" \"генеральный директор\"",
+    "\"Sergey Viktorovich\" \"sanctions list\"",
+    "\"Сергей Викторович\" ИНН",
+    "\"Sergey Viktorovich\" \"Deputy Minister\"",
+    "\"Сергей Викторович\" site:vk.com",
+    "\"Сергей Викторович\" \"паспорт\" filetype:pdf",
+    "Сергей Викторович * фамилия"
+  ],
+  "collectedData": [
+    {
+      "query": "\"Сергей Викторович\"",
+      "url": "https://ru.wikipedia.org/wiki/%D0%9B%D0%B0%D0%B2%D1%80%D0%BE%D0%B2,_%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%B9_%D0%92%D0%B8%D0%BA%D1%82%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D1%87",
+      "snippet": "Серге́й Ви́кторович Лавро́в (род. 21 марта 1950, Москва, СССР) — российский государственный и политический деятель, советский и российский дипломат.",
+      "title": "Лавров, Сергей Викторович — Википедия",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:11.726Z"
+    },
+    {
+      "query": "\"Сергей Викторович\"",
+      "url": "https://www.galaxy.clinic/morozov-sergej-viktorovich/",
+      "snippet": "Эстетический пластический хирург Морозов Сергей Викторович - образование, сертификаты, последние работы в Институте красоты ГАЛАКТИКА, ссылки на профили в ...",
+      "title": "Морозов Сергей Викторович - Эстетический пластический ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:11.726Z"
+    },
+    {
+      "query": "\"Сергей Викторович\"",
+      "url": "https://medongroup-yaroslavl.ru/doctors/abramov_s_v/",
+      "snippet": "Вы можете записаться на прием к врачу Абрамов Сергей Викторович в Ярославле через форму на сайте или по телефону.",
+      "title": "Ведущий врач-колопроктолог Абрамов Сергей Викторович в ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:11.726Z"
+    },
+    {
+      "query": "\"Сергей Викторович\"",
+      "url": "https://akzs.ru/akzs/deputy/135/23138/",
+      "snippet": "В 1996 году Сергей Викторович назначен директором школы №105. Опыт работы учителя географии С.В. Писарева обобщен Алтайским краевым институтом ...",
+      "title": "Писарев Сергей Викторович",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:11.726Z"
+    },
+    {
+      "query": "\"Сергей Викторович\"",
+      "url": "https://orenburg-gov.ru/activity/1928/",
+      "snippet": "Балыкин Сергей Викторович – первый вице-губернатор – первый заместитель председателя Правительства Оренбургской области – министр сельского хозяйства, ...",
+      "title": "Балыкин Сергей Викторович",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:11.726Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" \"генеральный директор\"",
+      "url": "https://fund.mgimo.ru/partners/Supervisory-board-of-MGIMO/chemezov-s-v",
+      "snippet": "Чемезов Сергей Викторович. Генеральный директор Государственной корпорации «Ростех». Родился 20 августа 1952 года в г. Черемхово Иркутской области. Окончил с ...",
+      "title": "Чемезов Сергей Викторович",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:12.432Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" \"генеральный директор\"",
+      "url": "https://ru.wikipedia.org/wiki/%D0%A7%D0%B5%D0%BC%D0%B5%D0%B7%D0%BE%D0%B2,_%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%B9_%D0%92%D0%B8%D0%BA%D1%82%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D1%87",
+      "snippet": "Серге́й Ви́кторович Че́мезов (род. 20 августа 1952, Черемхово, Иркутская область) — российский политик, экономист. Генеральный директор корпорации «Ростех» с 3 ...",
+      "title": "Чемезов, Сергей Викторович — Википедия",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:12.432Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" \"генеральный директор\"",
+      "url": "https://lider-voronezh.ru/members/goncharov-sergej-viktorovich/",
+      "snippet": "был избран генеральным директором, где на данный момент занимает пост председателя правления. Сергей Викторович принимает активное участие в разработке ...",
+      "title": "Гончаров Сергей Викторович | Гражданское собрание «Лидер»",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:12.432Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" \"генеральный директор\"",
+      "url": "https://yktgorduma.ru/chernyh-sergej-viktorovich",
+      "snippet": "Черных Сергей Викторович. ... – ООО «СибОйл», генеральный директор. Общественная деятельность: 2008-2013 гг ...",
+      "title": "Черных Сергей Викторович",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:12.432Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" \"генеральный директор\"",
+      "url": "https://soyuzmash.ru/people/chemezov-sergey-viktorovich/",
+      "snippet": "Чемезов Сергей Викторович. Чемезов Сергей Викторович. Генеральный директор Государственной корпорации \"Ростех\" Председатель ...",
+      "title": "Чемезов Сергей Викторович",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:12.432Z"
+    },
+    {
+      "query": "\"Sergey Viktorovich\" \"sanctions list\"",
+      "url": "https://ofac.treasury.gov/recent-actions/20220303",
+      "snippet": "Mar 3, 2022 ... Consolidated Sanctions List (Non-SDN Lists) · Additional Sanctions ... CHEMEZOV, Sergei (a.k.a. CHEMEZOV, Sergey Viktorovich); DOB 20 Aug ...",
+      "title": "Russia-related Designations; Issuance of Russia-related General ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:13.129Z"
+    },
+    {
+      "query": "\"Sergey Viktorovich\" \"sanctions list\"",
+      "url": "https://sanctionssearch.ofac.treas.gov/Details.aspx?id=48855",
+      "snippet": "The Sanctions List Search tool uses approximate string matching to ... Sergey Viktorovich, Nationality: Russia. Title: Citizenship: Date of Birth: 23 ...",
+      "title": "Sanctions List Search",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:13.129Z"
+    },
+    {
+      "query": "\"Sergey Viktorovich\" \"sanctions list\"",
+      "url": "https://ofac.treasury.gov/recent-actions/20220324",
+      "snippet": "Mar 24, 2022 ... Consolidated Sanctions List (Non-SDN Lists) · Additional Sanctions ... ALTUKHOV, Sergey Viktorovich (Cyrillic: АЛТУХОВ, Сергей Викторович) ...",
+      "title": "Russia-related Designations; Publication of new Frequently Asked ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:13.129Z"
+    },
+    {
+      "query": "\"Sergey Viktorovich\" \"sanctions list\"",
+      "url": "https://www.opensanctions.org/entities/Q7453960/",
+      "snippet": "As part of the Common Foreign Security Policy the European Union publishes a sanctions list that is implemented by all member states. ... sergey-viktorovich ...",
+      "title": "Sergei Chemezov - OpenSanctions",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:13.129Z"
+    },
+    {
+      "query": "\"Sergey Viktorovich\" \"sanctions list\"",
+      "url": "https://home.treasury.gov/news/press-releases/jy0677",
+      "snippet": "Mar 24, 2022 ... Consolidated Sanctions List · Search OFAC's Sanctions Lists ... Sergey Viktorovich Chizhov, Member of State Duma; Alexey Yuryevich ...",
+      "title": "U.S. Treasury Sanctions Russia's Defense-Industrial Base, the ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:13.129Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" ИНН",
+      "url": "https://www.rusprofile.ru/person/ponomarev-sv-772905582578",
+      "snippet": "Пономарев Сергей Викторович (ИНН 772905582578) – изучите факторы риска и факты о предпринимательской деятельности. Сведения о 3 организациях, где Пономарев ...",
+      "title": "Пономарев Сергей Викторович ИНН 772905582578",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:13.851Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" ИНН",
+      "url": "https://my-gkh.ru/getorganization/ip-isupov-s-v-kirovskaya",
+      "snippet": "Индивидуальный предприниматель Исупов Сергей Викторович - контакты, адрес, телефон, официальный сайт, почта, ИНН 434522199138.",
+      "title": "Управляющая компания ИП Исупов Сергей Викторович, Киров ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:13.851Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" ИНН",
+      "url": "https://www.rusprofile.ru/person/nosevich-sv-291903219863",
+      "snippet": "Носевич Сергей Викторович (ИНН 291903219863) – изучите факторы риска и факты о предпринимательской деятельности. Сведения о 2 организациях, где Носевич С.",
+      "title": "Носевич Сергей Викторович ИНН 291903219863",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:13.851Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" ИНН",
+      "url": "https://xn----7sbajahheyaepn1ca0aveqcb0fxl.xn--p1acf/kompaniya/ip-sidorenko-sergei-viktorovich-inn-575306963888/",
+      "snippet": "Aug 14, 2025 ... О компании. Полное наименование. ИП СИДОРЕНКО СЕРГЕЙ ВИКТОРОВИЧ. Статус. Действующая. Дата регистрации. 9 февраля 2018 ...",
+      "title": "2 декларации от ИП СИДОРЕНКО СЕРГЕЙ ВИКТОРОВИЧ, ИНН ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:13.851Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" ИНН",
+      "url": "https://www.rusprofile.ru/person/kuznecov-sv-222300616466",
+      "snippet": "Кузнецов Сергей Викторович (ИНН 222300616466) – изучите факторы риска и факты о предпринимательской деятельности. Сведения о 10 организациях, где Кузнецов ...",
+      "title": "Кузнецов Сергей Викторович ИНН 222300616466",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:13.851Z"
+    },
+    {
+      "query": "\"Sergey Viktorovich\" \"Deputy Minister\"",
+      "url": "https://www.mid.ru/en/about/structure/central_office/",
+      "snippet": "Sergey Viktorovich. Secretariat Phone: +7 (499) 244-92-71. Fax: +7 (499) 244-24-00. First Deputy Minister. Butin Sergey Vladimirovich. Secretariat Phone: +7 ( ...",
+      "title": "Structural diagram of the Ministry of Foreign Affairs of Russia - The ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:14.517Z"
+    },
+    {
+      "query": "\"Sergey Viktorovich\" \"Deputy Minister\"",
+      "url": "https://en.wikipedia.org/wiki/Sergey_Lavrov",
+      "snippet": "Sergey Viktorovich Lavrov (Russian: Сергей Викторович Лавров, IPA ... Deputy Minister of Foreign Affairs in 1992. He served as Russia's Permanent ...",
+      "title": "Sergey Lavrov - Wikipedia",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:14.517Z"
+    },
+    {
+      "query": "\"Sergey Viktorovich\" \"Deputy Minister\"",
+      "url": "https://www.mid.ru/en/about/structure/minister/",
+      "snippet": "Lavrov Sergey Viktorovich. person. Minister of Foreign Affairs of the Russian ... 1992-1994 – Deputy Minister of Foreign Affairs of the Russian Federation.",
+      "title": "Lavrov Sergey Viktorovich - The Ministry of Foreign Affairs of the ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:14.517Z"
+    },
+    {
+      "query": "\"Sergey Viktorovich\" \"Deputy Minister\"",
+      "url": "https://mid.ru/tv-person/?id=579816&lang=en",
+      "snippet": "Lavrov Sergey Viktorovich. Minister of Foreign Affairs of the Russian ... 1992-1994 – Deputy Minister of Foreign Affairs of the Russian Federation.",
+      "title": "Lavrov Sergey Viktorovich - Министерство иностранных дел ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:14.517Z"
+    },
+    {
+      "query": "\"Sergey Viktorovich\" \"Deputy Minister\"",
+      "url": "https://irp.fas.org/world/russia/fbis/AtomicEnergyMinistry.html",
+      "snippet": "Mar 19, 2003 ... Deputy Minister --- ANTIPOV, Sergey Viktorovich, appointed (Nuclear.ru, 15 Nov 02). [\"Antipov was born in 1948, graduated from the Moscow ...",
+      "title": "Atomic Energy Ministry",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:14.517Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" site:vk.com",
+      "url": "https://vk.com/id122328783",
+      "snippet": "На самом деле очень полезные тренировки по средам, глубокие, вдумчивые.Спасибо Вам Сергей Викторович!",
+      "title": "Сергей Сизов | ВКонтакте",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:15.058Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" site:vk.com",
+      "url": "https://vk.com/sergeydoc2013",
+      "snippet": "Сергей Викторович Логинов, Саратов, Россия. Окончил СГМУ им. В. И. Разумовского в 0. Войдите на сайт или зарегистрируйтесь, чтобы связаться с Сергеем ...",
+      "title": "Сергей Викторович Логинов | ВКонтакте",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:15.058Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" site:vk.com",
+      "url": "https://vk.com/@digitalschool_mskobr-professiya-pedagog-sergei-viktorovich-morozov",
+      "snippet": "Apr 14, 2023 ... Профессия - педагог / Сергей Викторович Морозов, изображение №2 ... Профессия - педагог / Сергей Викторович Морозов, изображение №9.",
+      "title": "Профессия - педагог / Сергей Викторович Морозов 2023 ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:15.058Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" site:vk.com",
+      "url": "https://vk.com/id550462766",
+      "snippet": "Сергей Викторович Гречкосей, Курган, Россия. Войдите на сайт или зарегистрируйтесь, чтобы связаться с Сергеем Викторовичом Гречкосеем или найти других ваших ...",
+      "title": "Сергей Викторович Гречкосей | ВКонтакте",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:15.058Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" site:vk.com",
+      "url": "https://vk.com/chizhovsv",
+      "snippet": "Вот такой папа пример всем отцам! С днём отца вас Сергей Викторович!",
+      "title": "Сергей Чижов | ВКонтакте",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:15.058Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" \"паспорт\" filetype:pdf",
+      "url": "https://www.ohchr.org/sites/default/files/Documents/Issues/Executions/AL_RUS_2020_11.pdf",
+      "snippet": "Nov 6, 2020 ... Примерно в середине пути их остановил дорожный патруль, и их попросили предъявить паспорта. Сотрудники полиции записали имена г-на ...",
+      "title": "Его Превосходительству Господину Сергею Викторовичу ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:15.742Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" \"паспорт\" filetype:pdf",
+      "url": "https://nmtkursk.ru/uploads/doverennost.pdf",
+      "snippet": "Шубину Сергею Викторовичу. Доверенность ... паспорт серии_____________, номер________________________, выдан (кем и когда). - ...",
+      "title": "Главному врачу Шубину Сергею Викторовичу Доверенность на ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:15.743Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" \"паспорт\" filetype:pdf",
+      "url": "https://www.kirovreg.ru/power/korrup/24/%D0%9F%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%E2%84%96%2021%20%D1%81%D0%B6.pdf",
+      "snippet": "Feb 16, 2024 ... я, Петров Сергей Викторович, 18.02.1975 г.р., паспорт 3311 123321, выдан. 01.03.2020 г., отделом УФМС России по Кировской области в Ленинском ...",
+      "title": "Untitled",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:15.743Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" \"паспорт\" filetype:pdf",
+      "url": "https://kurganobl.ru/sites/default/files/imceFiles/user-05/Primer_zapolneniya.pdf",
+      "snippet": "Dec 31, 2021 ... Я, Петров Сергей Викторович, 18.02.1975 г.р., паспорт 3311 123321, выдан. 12.03.2013 г., отделом УФМС России по Кировской области в Ленинском ...",
+      "title": "ПРИМЕР ЗАПОЛНЕНИЯ",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:15.743Z"
+    },
+    {
+      "query": "\"Сергей Викторович\" \"паспорт\" filetype:pdf",
+      "url": "https://www.sechenov.ru/upload/iblock/c7f/19appa8x64gisfhtktfkkt0kfmofqkg3/AVTOREFERAT-Osminin.pdf",
+      "snippet": "Осминин Сергей Викторович. Инновации в хирургии рака желудка. 3.1.9 ... Диссертационная работа соответствуют паспортам научных специальностей 3.1.9.",
+      "title": "На правах рукописи Осминин Сергей Викторович Инновации в ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:15.743Z"
+    },
+    {
+      "query": "Сергей Викторович * фамилия",
+      "url": "https://familia42.ru/staff/ivanov-sergey-viktorovich/",
+      "snippet": "Фамилия — медицинский центр, которому можно доверять любые внутренние проблемы семьи, а советы и рекомендации нашей профессиональной команды способствуют ...",
+      "title": "Иванов Сергей Викторович. Медицинский центр «Фамилия»",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:16.736Z"
+    },
+    {
+      "query": "Сергей Викторович * фамилия",
+      "url": "https://vaclavasishutin.wordpress.com/2021/04/07/%D1%82%D0%BE%D1%82-%D1%81%D0%B5%D1%80%D0%B3%D0%B5%D0%B9-%D0%B2%D0%B8%D0%BA%D1%82%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D1%87/",
+      "snippet": "Apr 7, 2021 ... ... СЕРГЕЙ ВИКТОРОВИЧ 1971 ФИО ПОТАПОВ СЕРГЕЙ ВИКТОРОВИЧ 1968 Дата ... СЕРГЕЙ ВИКТОРОВИЧ 1953 ФИО КОВШАРЬ СЕРГЕЙ ВИКТОРОВИЧ 1961 ФИО ЛЫСЫХ ...",
+      "title": "ТОТ СЕРГЕЙ ВИКТОРОВИЧ — vaclavasishutin",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:16.736Z"
+    },
+    {
+      "query": "Сергей Викторович * фамилия",
+      "url": "https://kabak.dp.ua/blinov-sergej-viktorovich",
+      "snippet": "Семья: Жена: Людмила, 29 января 1963 г.р. Дети: Ярослав, 1985 г.р. (дочь Ева, 2007 г.р.) Проживают в г.Архангельск. РОДСТВЕННЫЕ ФАМИЛИИ",
+      "title": "Блинов Сергей Викторович - Родовой сайт фамилии Кабак ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:16.736Z"
+    },
+    {
+      "query": "Сергей Викторович * фамилия",
+      "url": "http://edfond.ru/index.php/kraevedenie/nashi-zemlyaki/pochetnye-grazhdane/88-zaletin-sergej-viktorovich",
+      "snippet": "... Сергей Викторович Залетин. Даже фамилией отца ему предначертано было летать, летать, летать! И Сергей летал все выше и выше, а 8 августа 1990 года зачислен ...",
+      "title": "Залетин Сергей Викторович - Щекинская Межпоселенческая ...",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:16.736Z"
+    },
+    {
+      "query": "Сергей Викторович * фамилия",
+      "url": "https://www.lepel.vitebsk-region.gov.by/uploads/files/000252_54875__glava_1_zhilischnye_pravootnoshenija.doc",
+      "snippet": "Без зместу",
+      "title": "Untitled",
+      "sourceAPI": "CS_API",
+      "timestamp": "2025-10-27T21:41:16.736Z"
+    }
+  ],
+  "analysis": "[{\"description\":\"A high-profile Russian statesman, diplomat, and current Minister of Foreign Affairs of the Russian Federation since 2004.\",\"mainData\":{\"fullName\":\"Сергей Викторович Лавров\",\"possibleNicknames\":[\"Sergey Viktorovich Lavrov\"],\"dateOfBirth\":\"21.03.1950\",\"placeOfBirth\":\"Москва, СССР\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[\"+7 (499) 244-92-71\"],\"residenceAddress\":\"Moscow, Russia\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[\"Minister of Foreign Affairs of the Russian Federation\",\"Deputy Minister of Foreign Affairs of the Russian Federation (1992-1994)\"],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[\"Widely mentioned in international media in his capacity as Foreign Minister.\"],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This individual is Sergey Viktorovich Lavrov, the long-serving Minister of Foreign Affairs of Russia. The provided data from multiple official and encyclopedic sources consistently confirms his identity, date of birth, and career milestones. He is distinct from all other individuals named Sergey Viktorovich in this analysis.\",\"accuracyAssessment\":\"HIGH. The information is corroborated by official government websites (mid.ru) and reputable encyclopedic sources (Wikipedia), providing a consistent and detailed profile of a major political figure.\",\"additionalInfo\":\"The Secretariat's fax number is listed as +7 (499) 244-24-00.\",\"sources\":[\"https://ru.wikipedia.org/wiki/%D0%9B%D0%B0%D0%B2%D1%80%D0%BE%D0%B2,_%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%B9_%D0%92%D0%B8%D0%BA%D1%82%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D1%87\",\"https://www.mid.ru/en/about/structure/central_office/\",\"https://en.wikipedia.org/wiki/Sergey_Lavrov\",\"https://www.mid.ru/en/about/structure/minister/\",\"https://mid.ru/tv-person/?id=579816&lang=en\"]},{\"description\":\"A prominent Russian politician and economist, currently the General Director of the 'Rostec' State Corporation. He is a key figure in Russia's defense-industrial sector and is subject to international sanctions.\",\"mainData\":{\"fullName\":\"Сергей Викторович Чемезов\",\"possibleNicknames\":[\"Sergei Chemezov\"],\"dateOfBirth\":\"20.08.1952\",\"placeOfBirth\":\"г. Черемхово Иркутской области\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"N/A\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[\"Окончил с отличием Иркутский институт народного хозяйства\",\"Окончил Высшие курсы Военной академии Генерального штаба Вооружённых сил Российской Федерации\"],\"workplacePosition\":[\"General Director of State Corporation 'Rostec'\",\"Chairman of Soyuzmash (Союз машиностроителей России)\"],\"legalEntityInvolvement\":[\"General Director of State Corporation 'Rostec'\"]},\"mediaMentions\":{\"courtRecords\":[\"Subject to sanctions by the U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC).\",\"Listed on the European Union sanctions list.\"],\"mediaMentions\":[\"Frequently mentioned in Russian and international media regarding the activities of Rostec and the Russian defense industry.\"],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This is Sergey Viktorovich Chemezov, the head of the Rostec corporation. His identity, birth details, and professional role are confirmed across multiple sources, including corporate, academic, and sanctions-related databases. He is a distinct high-profile individual.\",\"accuracyAssessment\":\"HIGH. Information is cross-referenced from multiple authoritative sources including Wikipedia, MGIMO Fund, Soyuzmash, and official U.S. Treasury sanctions lists, ensuring high reliability.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://fund.mgimo.ru/partners/Supervisory-board-of-MGIMO/chemezov-s-v\",\"https://ru.wikipedia.org/wiki/%D0%A7%D0%B5%D0%BC%D0%B5%D0%B7%D0%BE%D0%B2,_%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%B9_%D0%92%D0%B8%D0%BA%D1%82%D0%BE%D1%80%D0%BE%D0%B2%D0%B8%D1%87\",\"https://soyuzmash.ru/people/chemezov-sergey-viktorovich/\",\"https://ofac.treasury.gov/recent-actions/20220303\",\"https://www.opensanctions.org/entities/Q7453960/\"]},{\"description\":\"A Russian politician, serving as the First Vice-Governor and Minister of Agriculture for the Orenburg Oblast.\",\"mainData\":{\"fullName\":\"Сергей Викторович Балыкин\",\"possibleNicknames\":[],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"Оренбургская область, Россия\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[\"Первый вице-губернатор – первый заместитель председателя Правительства Оренбургской области\",\"Министр сельского хозяйства, торговли, пищевой и перерабатывающей промышленности Оренбургской области\"],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This individual is Sergey Viktorovich Balykin, a regional government official in the Orenburg Oblast. The information is based on a single official government source, which clearly defines his role and location, distinguishing him from other lookalikes.\",\"accuracyAssessment\":\"MEDIUM. The data comes from an official government website, which is a reliable source. However, the lack of cross-referencing from other sources limits the assessment to medium.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://orenburg-gov.ru/activity/1928/\"]},{\"description\":\"A member of the Russian State Duma who has been sanctioned by the U.S. Treasury.\",\"mainData\":{\"fullName\":\"Сергей Викторович Чижов\",\"possibleNicknames\":[\"Sergey Viktorovich Chizhov\"],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"N/A\"},\"socialMedia\":{\"VK\":\"https://vk.com/chizhovsv\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[\"Member of State Duma\"],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[\"Mentioned in the U.S. Treasury press release 'U.S. Treasury Sanctions Russia's Defense-Industrial Base, the Russian Duma and Its Members, and Sberbank CEO' on March 24, 2022.\"],\"mediaMentions\":[],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This individual is Sergey Viktorovich Chizhov, a Russian politician. His role as a member of the State Duma is confirmed by a U.S. Treasury press release concerning sanctions. A VKontakte profile is strongly associated with him. This data distinguishes him from other individuals with the same name.\",\"accuracyAssessment\":\"HIGH. The identification is based on an official U.S. government document and is supported by an associated social media profile, providing strong evidence of his identity and role.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://home.treasury.gov/news/press-releases/jy0677\",\"https://vk.com/chizhovsv\"]},{\"description\":\"An individual named on the U.S. Treasury's OFAC sanctions list.\",\"mainData\":{\"fullName\":\"Сергей Викторович Алтухов\",\"possibleNicknames\":[\"Sergey Viktorovich ALTUKHOV\"],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"N/A\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[\"Included in the OFAC Consolidated Sanctions List as per a press release dated March 24, 2022.\"],\"mediaMentions\":[],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"Sergey Viktorovich Altukhov is identified solely through his inclusion on an OFAC sanctions list. No further details about his profession or background are available in the provided sources. His presence on this list clearly distinguishes him as a unique individual in this analysis.\",\"accuracyAssessment\":\"MEDIUM. The source is an official U.S. government publication, which is highly reliable for the information it contains. However, the lack of any other biographical data prevents a high overall accuracy assessment for a full profile.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://ofac.treasury.gov/recent-actions/20220324\"]},{\"description\":\"An aesthetic plastic surgeon associated with the 'Institute of Beauty GALAKTIKA'.\",\"mainData\":{\"fullName\":\"Сергей Викторович Морозов\",\"possibleNicknames\":[],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"N/A\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[\"Эстетический пластический хирург (Aesthetic plastic surgeon)\"],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This individual is a medical professional specializing in plastic surgery. His distinct profession and place of work separate him from another Sergey Viktorovich Morozov identified as a pedagogue, as well as from all other subjects in this report.\",\"accuracyAssessment\":\"MEDIUM. The information comes from a single source, the clinic's website. While likely accurate, it lacks independent verification.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://www.galaxy.clinic/morozov-sergej-viktorovich/\"]},{\"description\":\"A pedagogue, likely based in Moscow, featured in an article about the teaching profession.\",\"mainData\":{\"fullName\":\"Сергей Викторович Морозов\",\"possibleNicknames\":[],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"Москва, Россия (предположительно)\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[\"Педагог (Pedagogue)\"],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[\"Subject of a VKontakte article titled 'Профессия - педагог / Сергей Викторович Морозов 2023'.\"],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This Sergey Viktorovich Morozov is identified as a teacher through a dedicated article on VKontakte. His profession clearly distinguishes him from the plastic surgeon with the same name. The context (@digitalschool_mskobr) suggests a connection to Moscow's education system.\",\"accuracyAssessment\":\"MEDIUM. The information is based on a single social media article. While the article is specific, there is no corroborating data from other sources.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://vk.com/@digitalschool_mskobr-professiya-pedagog-sergei-viktorovich-morozov\"]},{\"description\":\"A medical doctor specializing in coloproctology, practicing in the city of Yaroslavl.\",\"mainData\":{\"fullName\":\"Сергей Викторович Абрамов\",\"possibleNicknames\":[],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"Ярославль, Россия\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[\"Врач-колопроктолог (Coloproctologist)\"],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This individual is a medical specialist, Sergey Viktorovich Abramov, located in Yaroslavl. The specific role and location clearly distinguish him from other individuals.\",\"accuracyAssessment\":\"MEDIUM. The information is derived from a single medical clinic's website. While the source is specific to the individual, there is no secondary confirmation.\",\"additionalInfo\":\"Patients can book an appointment with him through the clinic's website or by phone.\",\"sources\":[\"https://medongroup-yaroslavl.ru/doctors/abramov_s_v/\"]},{\"description\":\"An educator in the Altai Krai, who has served as a school director since 1996 and is recognized for his experience as a geography teacher.\",\"mainData\":{\"fullName\":\"Сергей Викторович Писарев\",\"possibleNicknames\":[],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"Алтайский край, Россия\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[\"Директор школы №105 (appointed 1996)\",\"Учитель географии (Geography teacher)\"],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[],\"dataBreaches\":\"N/A\",\"achievements\":[\"His work experience as a geography teacher was generalized by the Altai Krai Institute.\"]},\"conclusion\":\"Sergey Viktorovich Pisarev is an educator with a long career as a school director in the Altai Krai. The details provided by the regional government website are specific and sufficient to create a distinct profile.\",\"accuracyAssessment\":\"MEDIUM. The source is an official regional assembly website (akzs.ru), which lends credibility. However, the information is not corroborated by other sources.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://akzs.ru/akzs/deputy/135/23138/\"]},{\"description\":\"A business executive, formerly a General Director and currently the Chairman of the Board, associated with the 'Lider' Civil Assembly in Voronezh.\",\"mainData\":{\"fullName\":\"Сергей Викторович Гончаров\",\"possibleNicknames\":[],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"Воронеж, Россия (предположительно)\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[],\"legalEntityInvolvement\":[\"Генеральный директор (General Director, formerly)\",\"Председатель правления (Chairman of the Board)\"]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[\"Takes an active part in development activities within his organization.\"],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This individual is a business leader in Voronezh. The provided information about his roles (past and present) within a specific organization distinguishes him from others.\",\"accuracyAssessment\":\"MEDIUM. Based on a single organizational website. The information appears credible in its context but lacks external validation.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://lider-voronezh.ru/members/goncharov-sergej-viktorovich/\"]},{\"description\":\"General Director of the company 'SibOil' LLC, with a history of public activity.\",\"mainData\":{\"fullName\":\"Сергей Викторович Черных\",\"possibleNicknames\":[],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"N/A\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[\"Engaged in public activities from 2008-2013\"],\"legalEntityInvolvement\":[\"Генеральный директор ООО «СибОйл» (General Director of 'SibOil' LLC)\"]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"Sergey Viktorovich Chernykh is a business executive identified as the General Director of SibOil LLC. This specific corporate role serves as a unique identifier.\",\"accuracyAssessment\":\"MEDIUM. Information is from a single source (yktgorduma.ru), which appears to be a municipal or regional government portal. The data is specific but uncorroborated.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://yktgorduma.ru/chernyh-sergej-viktorovich\"]},{\"description\":\"Former Deputy Minister of Atomic Energy of Russia, born in 1948.\",\"mainData\":{\"fullName\":\"Сергей Викторович Антипов\",\"possibleNicknames\":[],\"dateOfBirth\":\"1948\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"N/A\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[\"Graduated from the Moscow...\"],\"workplacePosition\":[\"Deputy Minister of Atomic Energy (appointed 15 Nov 2002)\"],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This individual, Sergey Viktorovich Antipov, is a former government official whose identity is established by a report from 2003. His specific role, year of birth, and appointment date distinguish him from other lookalikes.\",\"accuracyAssessment\":\"MEDIUM. The source (irp.fas.org) is a reputable archive, but the information is dated. It is sufficient for identification but lacks current context.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://irp.fas.org/world/russia/fbis/AtomicEnergyMinistry.html\"]},{\"description\":\"Individual from Saratov, Russia, who graduated from Saratov State Medical University.\",\"mainData\":{\"fullName\":\"Сергей Викторович Логинов\",\"possibleNicknames\":[],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"Saratov, Russia\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"Саратов, Россия\"},\"socialMedia\":{\"VK\":\"https://vk.com/sergeydoc2013\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[\"Окончил СГМУ им. В. И. Разумовского (Graduated from Saratov State Medical University named after V. I. Razumovsky)\"],\"workplacePosition\":[],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This is a profile of an individual from Saratov with a medical education, based on a single VKontakte profile. The combination of name, location, and education makes this a distinct person, though the available information is minimal.\",\"accuracyAssessment\":\"LOW. The profile is based entirely on a single social media page, which may not be fully verified or up-to-date. The data is sufficient for distinction but lacks high reliability.\",\"additionalInfo\":\"N/A\",\"sources\":[\"https://vk.com/sergeydoc2013\"]},{\"description\":\"Entrepreneurial individual identified by their Russian Taxpayer Identification Number (ИНН) and association with 3 legal entities.\",\"mainData\":{\"fullName\":\"Сергей Викторович Пономарев\",\"possibleNicknames\":[],\"dateOfBirth\":\"N/A\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"N/A\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[],\"legalEntityInvolvement\":[\"Associated with 3 organizations\"]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"This individual is identified through the business registry portal Rusprofile.ru. The unique Taxpayer Identification Number (TIN) 772905582578 definitively separates this person from any other Sergey Viktorovich. The profile is limited to entrepreneurial activity.\",\"accuracyAssessment\":\"HIGH. The TIN is a unique official identifier, making the connection to this specific individual highly accurate, even if biographical details are sparse.\",\"additionalInfo\":\"TIN (ИНН): 772905582578\",\"sources\":[\"https://www.rusprofile.ru/person/ponomarev-sv-772905582578\"]},{\"description\":\"Individual whose personal details (DOB, passport number) are used in example declaration forms from Kirov and Kurgan regional authorities.\",\"mainData\":{\"fullName\":\"Сергей Викторович Петров\",\"possibleNicknames\":[],\"dateOfBirth\":\"18.02.1975\",\"placeOfBirth\":\"N/A\",\"citizenship\":\"Russian\",\"photoLink\":\"N/A\"},\"contacts\":{\"email\":[],\"phone\":[],\"residenceAddress\":\"Кировская область, Россия\"},\"socialMedia\":{\"VK\":\"N/A\",\"Facebook\":\"N/A\",\"LinkedIn\":\"N/A\",\"Telegram\":\"N/A\",\"other\":[]},\"professionalActivity\":{\"education\":[],\"workplacePosition\":[],\"legalEntityInvolvement\":[]},\"mediaMentions\":{\"courtRecords\":[],\"mediaMentions\":[\"Mentioned in sample documents as an example for filling out forms.\"],\"dataBreaches\":\"N/A\",\"achievements\":[]},\"conclusion\":\"Sergey Viktorovich Petrov is an individual whose identity is detailed in sample legal/administrative documents. While the person may be real or fictional for template purposes, the provided unique data (full name, DOB, passport number) creates a distinct profile within this dataset.\",\"accuracyAssessment\":\"MEDIUM. The data is consistent across two official documents. However, its nature as a template example raises questions about whether it pertains to a real individual or is purely illustrative.\",\"additionalInfo\":\"Passport details listed: 3311 123321, issued by UFMS of Russia for the Kirov Oblast.\",\"sources\":[\"https://www.kirovreg.ru/power/korrup/24/%D0%9F%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%E2%84%96%2021%20%D1%81%D0%B6.pdf\",\"https://kurganobl.ru/sites/default/files/imceFiles/user-05/Primer_zapolneniya.pdf\"]}]",
+  "createdAt": 1761601255520,
+  "updatedAt": 1761601391622
+}

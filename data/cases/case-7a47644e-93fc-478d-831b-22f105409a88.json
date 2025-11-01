@@ -1,0 +1,17 @@
+{
+  "caseId": "case-7a47644e-93fc-478d-831b-22f105409a88",
+  "task": "gzhngh",
+  "generatedQueries": [
+    "\"gzhngh\"",
+    "gzhngh site:linkedin.com OR site:twitter.com OR site:github.com",
+    "ГЖНГХ",
+    "gzhngh username OR handle",
+    "gzhngh company OR organization",
+    "\"gzhngh\" filetype:pdf OR filetype:doc",
+    "gzhngh pastebin OR reddit"
+  ],
+  "collectedData": [],
+  "analysis": null,
+  "createdAt": 1761599320812,
+  "updatedAt": 1761599320812
+}
