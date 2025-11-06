@@ -2,131 +2,26 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import TableComponent from "@/app/components/TableComponent";
+import SpecializedSources from "@/app/components/SpecializedSources";
 import { Tsezka, AiProfile, CaseData, SearchQuery } from "@/types/osint";
+import { fetchJson } from "@/lib/http"; // typed wrapper
 
-// --- ІНТЭРФЕЙСЫ ДЛЯ ЛАКАЛЬНАГА ВЫКАРЫСТАННЯ ---
+// Local types
 interface GeneratedVariants {
   nameVariants: string[];
   emailVariants: string[];
   usernameVariants: string[];
 }
-type ApiError = { error?: string; message?: string };
 
-// --- УТЫЛІТЫ: ВЫКЛІКІ API ---
-
-const getErrorMessage = (error: unknown, defaultMsg: string): string => {
-  return error instanceof Error ? error.message : defaultMsg;
-};
-
-// Правільная адпраўка fullName у generate-variants
-async function generateVariants(fullName: string): Promise<GeneratedVariants> {
-  const response = await fetch("/api/generate-variants", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fullName }),
-  });
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Памылка генерацыі варыянтаў: ${err}`);
-  }
-  return response.json();
-}
-
-// Правільная адпраўка толькі task у generate-queries (сервер стварае caseId)
-async function generateQueries(
-  task: string
-): Promise<{ caseId: string; queries: string[] }> {
-  const response = await fetch("/api/generate-queries", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ task }),
-  });
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Памылка генерацыі запытаў: ${err}`);
-  }
-  return response.json();
-}
-
-// Правільная адпраўка поля searchQuery і optional specializedSources у collect-data
-async function collectData(
-  caseId: string,
-  searchQuery: string,
-  specializedSources?: string[] // optional list of specialized sources
-): Promise<number> {
-  const body: Record<string, unknown> = { caseId, searchQuery };
-  if (specializedSources && specializedSources.length > 0) {
-    body.specializedSources = specializedSources;
-  }
-
-  const response = await fetch("/api/collect-data", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Памылка збору дадзеных: ${errText}`);
-  }
-  const result = await response.json();
-  return result.collectedCount || 0;
-}
-
-async function analyzeData(caseId: string): Promise<AiProfile[]> {
-  const response = await fetch("/api/analyze-data", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ caseId }),
-  });
-
-  if (!response.ok) {
-    const error = (await response.json()) as ApiError;
-    throw new Error(
-      error.error || error.message || "Не атрымалася прааналізаваць дадзеныя."
-    );
-  }
-
-  const result = await response.json();
-  let profiles: AiProfile[];
-
-  if (result.analysisData && Array.isArray(result.analysisData)) {
-    profiles = result.analysisData as AiProfile[];
-  } else if (typeof result.analysis === "string") {
-    try {
-      profiles = JSON.parse(result.analysis) as AiProfile[];
-    } catch {
-      throw new Error("Аналіз AI вярнуў некарэктны фармат JSON.");
-    }
-  } else {
-    throw new Error("Аналіз не вярнуў масіў профіляў.");
-  }
-
-  return profiles;
-}
-
-async function getFullCaseData(caseId: string): Promise<CaseData | null> {
-  const response = await fetch(`/api/case-session?caseId=${caseId}`);
-
-  if (!response.ok) {
-    if (response.status === 404) return null;
-    throw new Error("Не атрымалася атрымаць поўныя дадзеныя сэсіі.");
-  }
-  return response.json() as Promise<CaseData>;
-}
-
-// --- НЕКАТОРЫЯ УТЫЛІТЫ ---
-const isQueryValid = (q: unknown): q is string =>
-  typeof q === "string" &&
-  q.trim().length > 0 &&
-  q.toLowerCase() !== "undefined";
+// Helpers
+const getErrorMessage = (error: unknown, defaultMsg = "Невядомая памылка") =>
+  error instanceof Error ? error.message : defaultMsg;
 
 const uniqueArray = (arr: string[]) =>
   Array.from(new Set(arr.map((s) => s.trim()).filter((s) => s.length > 0)));
 
-// --- НОВАЯ ФУНКЦЫЯ: Пераўтварэнне з AiProfile ў Tsezka ---
-const transformToTsezka = (profiles: AiProfile[]): Tsezka[] => {
-  return profiles.map((profile) => ({
+const transformToTsezka = (profiles: AiProfile[]): Tsezka[] =>
+  profiles.map((profile) => ({
     name: profile.mainData?.fullName || "Няма імя",
     region: profile.contacts?.residenceAddress || "Невядомы рэгіён",
     activity:
@@ -138,27 +33,113 @@ const transformToTsezka = (profiles: AiProfile[]): Tsezka[] => {
     url:
       profile.sources && profile.sources.length > 0 ? profile.sources[0] : "#",
   }));
-};
 
-// --- КАМПАНЕНТЫ І ЛОГІКА ---
+// API wrappers (use fetchJson wrapper)
+async function generateVariants(fullName: string): Promise<GeneratedVariants> {
+  return fetchJson<GeneratedVariants>("/api/generate-variants", {
+    method: "POST",
+    body: { fullName },
+  });
+}
+
+async function generateQueries(
+  task: string
+): Promise<{ caseId: string; queries: string[] }> {
+  return fetchJson<{ caseId: string; queries: string[] }>(
+    "/api/generate-queries",
+    {
+      method: "POST",
+      body: { task },
+    }
+  );
+}
+
+async function collectData(
+  caseId: string,
+  searchQuery: string,
+  specializedSources?: string[]
+): Promise<{
+  entriesCount: number;
+  collectedCount: number;
+  processedResults?: number;
+  sourceUsed?: string;
+}> {
+  return fetchJson<{
+    entriesCount: number;
+    collectedCount: number;
+    processedResults?: number;
+    sourceUsed?: string;
+  }>("/api/collect-data", {
+    method: "POST",
+    body: { caseId, searchQuery, specializedSources },
+  });
+}
+
+// IMPORTANT: analyzeData uses an extended timeout (timeoutMs) because analysis can be long
+type AnalyzeResp =
+  | {
+      analysisData?: AiProfile[];
+      analysis?: string;
+      error?: string;
+    }
+  | AiProfile[]
+  | null;
+
+async function analyzeData(caseId: string): Promise<AiProfile[]> {
+  const resp = await fetchJson<AnalyzeResp>("/api/analyze-data", {
+    method: "POST",
+    body: { caseId },
+    timeoutMs: 120000,
+  });
+
+  if (!resp) return [];
+
+  if (Array.isArray(resp)) return resp as AiProfile[];
+
+  if (resp.error) throw new Error(resp.error);
+  if (Array.isArray(resp.analysisData)) return resp.analysisData!;
+  if (typeof resp.analysis === "string") {
+    try {
+      const parsed = JSON.parse(resp.analysis);
+      if (Array.isArray(parsed)) return parsed as AiProfile[];
+      return [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+async function getFullCaseData(caseId: string): Promise<CaseData | null> {
+  return fetchJson<CaseData | null>(
+    `/api/case-session?caseId=${encodeURIComponent(caseId)}`
+  );
+}
+
+// Configurable batch/concurrency
+const QUERIES_BATCH_SIZE = 10; // split into parts of 10
+const COLLECT_CONCURRENCY = 3; // how many concurrent collectData calls within a batch
 
 export default function OsintHelperApp() {
   const [task, setTask] = useState("");
   const [currentCaseId, setCurrentCaseId] = useState<string | null>(null);
   const [queries, setQueries] = useState<string[]>([]);
+  const [generatedVariants, setGeneratedVariants] =
+    useState<GeneratedVariants | null>(null);
+  const [specializedSources, setSpecializedSources] = useState<string[]>([]);
   const [analysisResult, setAnalysisResult] = useState<AiProfile[] | null>(
     null
   );
-  const [collectedCount, setCollectedCount] = useState(0);
+  const [fullCase, setFullCase] = useState<CaseData | null>(null);
+  const [collectedCount, setCollectedCount] = useState<number>(0);
+  const [processedTotal, setProcessedTotal] = useState<number | null>(null);
+  const [addedTotal, setAddedTotal] = useState<number | null>(null);
   const [loadingState, setLoadingState] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [fullCase, setFullCase] = useState<CaseData | null>(null);
-  const [loadCaseIdInput, setLoadCaseIdInput] = useState<string>("");
-  const [generatedVariants, setGeneratedVariants] =
-    useState<GeneratedVariants | null>(null);
-  // Новае: спецыялізаваныя крыніцы (ўвод карыстальнікам: па радках або праз коскі)
-  const [specializedSourcesText, setSpecializedSourcesText] =
-    useState<string>("");
+
+  // batch progress state
+  const [batchIndex, setBatchIndex] = useState<number | null>(null); // current batch (0-based)
+  const [totalBatches, setTotalBatches] = useState<number | null>(null);
 
   const isIdle = loadingState === null;
   const isReadyForCollection = Boolean(currentCaseId && queries.length > 0);
@@ -166,109 +147,42 @@ export default function OsintHelperApp() {
     currentCaseId && collectedCount > 0 && isIdle
   );
 
-  // --- E. Аднаўленне стану і прагляд сэсіі ---
-  // Заўвага: НЕ аўтавыклікаем handleViewCase пры загрузцы старонкі.
-  // Карыстальнік павінен уручную загрузіць кейс або стварыць новы.
-  const handleViewCase = useCallback(async (caseIdToLoad: string) => {
-    if (!caseIdToLoad || caseIdToLoad.trim().length === 0) return;
-    setError(null);
-    setLoadingState("Загрузка сэсіі...");
-
-    try {
-      const data = await getFullCaseData(caseIdToLoad);
-
-      if (data) {
-        setCurrentCaseId(caseIdToLoad);
-        // persist current case id for convenience (but НЕ аўта-лагін)
-        if (typeof window !== "undefined") {
-          localStorage.setItem("currentCaseId", caseIdToLoad);
-        }
-
-        setFullCase(data);
-        setTask(data.task);
-        setQueries(data.generatedQueries || []);
-        setCollectedCount(data.collectedData?.length || 0);
-
-        if (data.analysis) {
-          try {
-            setAnalysisResult(JSON.parse(data.analysis) as AiProfile[]);
-          } catch {
-            setAnalysisResult(null);
-          }
-        } else {
-          setAnalysisResult(null);
-        }
-
-        setGeneratedVariants(null);
-        setLoadCaseIdInput("");
-      } else {
-        // паказваем паведамленне толькі калі карыстальнік РУЧНО спрабаваў загрузіць кейс
-        setError(`Кейс ID ${caseIdToLoad} не знойдзены.`);
-        setCurrentCaseId(null);
-        setFullCase(null);
-      }
-    } catch (e: unknown) {
-      setError(
-        getErrorMessage(
-          e,
-          "Памылка аднаўлення стану сэсіі. Паспрабуйце яшчэ раз."
-        )
-      );
-      setFullCase(null);
-    } finally {
-      setLoadingState(null);
-    }
-  }, []);
-
-  // --- A. Асноўны запуск: Генерацыя запытаў і стварэнне сэсіі ---
+  // Create case and load it
   const handleStartCase = useCallback(async () => {
     if (!task.trim()) {
       setError("Калі ласка, увядзіце задачу.");
       return;
     }
-
     setError(null);
-    setAnalysisResult(null);
-    setCollectedCount(0);
-    setQueries([]);
-    setGeneratedVariants(null);
-    setFullCase(null);
-
+    setLoadingState("Генерацыя першасных запытаў...");
     try {
-      setLoadingState("Генерацыя першасных запытаў...");
-      const { caseId: newCaseId } = await generateQueries(task);
-
-      // аўтаматычная загрузка створанага кейса у UI
-      await handleViewCase(newCaseId);
-
-      setLoadingState(
-        `✅ Новы кейс ID ${newCaseId} створаны. Гатова да збору дадзеных.`
-      );
-      setTimeout(() => setLoadingState(null), 2000);
+      const { caseId, queries: gen } = await generateQueries(task);
+      setCurrentCaseId(caseId);
+      setQueries(uniqueArray([...(gen || [])]));
+      const data = await getFullCaseData(caseId);
+      if (data) {
+        setFullCase(data);
+        setCollectedCount(data.collectedData?.length || 0);
+      }
+      setGeneratedVariants(null);
     } catch (e: unknown) {
       setError(getErrorMessage(e, "Памылка генерацыі запытаў."));
-      setCurrentCaseId(null);
     } finally {
       setLoadingState(null);
     }
-  }, [task, handleViewCase]);
+  }, [task]);
 
-  // B. Генерацыя дадатковых варыянтаў
+  // Variant B: generate variants only previews them
   const handleGenerateVariants = useCallback(async () => {
     if (!task.trim()) {
       setError("Калі ласка, увядзіце імя/задачу для генерацыі варыянтаў.");
       return;
     }
-
     setError(null);
+    setLoadingState("Генерацыя варыянтаў...");
     try {
-      setLoadingState("Генерацыя варыянтаў імёнаў і нікнэймаў...");
       const variants = await generateVariants(task);
       setGeneratedVariants(variants);
-
-      // аўтаматычна дадаём новыя nameVariants у спіс queries (і робім унікальнымі)
-      const cleanedNew = (variants.nameVariants || []).filter(isQueryValid);
-      setQueries((prev) => uniqueArray([...prev, ...cleanedNew]));
     } catch (e: unknown) {
       setError(getErrorMessage(e, "Памылка генерацыі варыянтаў."));
     } finally {
@@ -276,7 +190,47 @@ export default function OsintHelperApp() {
     }
   }, [task]);
 
-  // C. Збор дадзеных — асноўны flow з падтрымкай спецыялізаваных крыніц
+  const addGeneratedVariantsToQueries = useCallback(() => {
+    if (!generatedVariants) return;
+    const cleaned = (generatedVariants.nameVariants || []).filter(
+      (q) => typeof q === "string" && q.trim()
+    );
+    setQueries((prev) => uniqueArray([...prev, ...cleaned]));
+  }, [generatedVariants]);
+
+  const addEmptyQuery = useCallback(() => setQueries((p) => [...p, ""]), []);
+
+  // helper: run limited concurrency workers over an array of tasks (simple)
+  // typed to return array of R | undefined
+  async function runWithConcurrency<T, R>(
+    items: T[],
+    worker: (it: T, idx: number) => Promise<R>,
+    concurrency = 3
+  ): Promise<(R | undefined)[]> {
+    const results: (R | undefined)[] = [];
+    let i = 0;
+    async function runner() {
+      while (true) {
+        const idx = i++;
+        if (idx >= items.length) return;
+        try {
+          const r = await worker(items[idx], idx);
+          results[idx] = r;
+        } catch {
+          // on error store undefined
+          results[idx] = undefined;
+        }
+      }
+    }
+    const workers = Array.from({ length: Math.max(1, concurrency) }).map(() =>
+      runner()
+    );
+    await Promise.all(workers);
+    return results;
+  }
+
+  // Collect flow: split queries into batches of QUERIES_BATCH_SIZE and process each batch sequentially.
+  // Within a batch we use limited concurrency (COLLECT_CONCURRENCY) to avoid overwhelming CS API.
   const handleCollectAll = useCallback(async () => {
     if (!currentCaseId || queries.length === 0) {
       setError("Няма кейса або няма запытаў для збору.");
@@ -284,70 +238,146 @@ export default function OsintHelperApp() {
     }
 
     setError(null);
-    let totalCollected = 0;
+    setProcessedTotal(0);
+    setAddedTotal(0);
 
-    // парсим specializedSourcesText у масіў крыніц
-    const specializedSources = specializedSourcesText
-      .split(/[\n,;]+/)
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
+    const total = queries.length;
+    const batches: string[][] = [];
+    for (let i = 0; i < total; i += QUERIES_BATCH_SIZE) {
+      batches.push(queries.slice(i, i + QUERIES_BATCH_SIZE));
+    }
+
+    setTotalBatches(batches.length);
+    setBatchIndex(0);
+    setLoadingState(`Збор: 0/${batches.length} партый`); // initial
+
+    let processedAcc = 0;
+    let addedAcc = 0;
 
     try {
-      setLoadingState(`Пачатак збору дадзеных па ${queries.length} запытах...`);
-
-      for (const query of queries) {
-        setLoadingState(`Збор: ${query.substring(0, 100)}...`);
-        const collectedCountForQuery = await collectData(
-          currentCaseId,
-          query,
-          specializedSources.length > 0 ? specializedSources : undefined
+      for (let bi = 0; bi < batches.length; bi++) {
+        const batch = batches[bi];
+        setBatchIndex(bi);
+        setLoadingState(
+          `Збор партыі ${bi + 1}/${batches.length} (${batch.length} запытаў)...`
         );
-        totalCollected += collectedCountForQuery;
-      }
 
-      const updatedCase = await getFullCaseData(currentCaseId);
-      if (updatedCase) {
-        setCollectedCount(updatedCase.collectedData.length);
-        setFullCase(updatedCase);
+        // Worker function for an individual query
+        const worker = async (q: string) => {
+          const resp = await collectData(
+            currentCaseId!,
+            q,
+            specializedSources.length ? specializedSources : undefined
+          );
+          return resp;
+        };
+
+        // Execute batch with limited concurrency
+        type CollectResp = Awaited<ReturnType<typeof collectData>>;
+        const results = await runWithConcurrency<string, CollectResp>(
+          batch,
+          worker,
+          COLLECT_CONCURRENCY
+        );
+
+        // Aggregate results for the batch
+        for (const res of results) {
+          if (!res) continue;
+          const entries = Number(res.entriesCount ?? 0);
+          const processed = Number(res.processedResults ?? 0);
+          addedAcc += entries;
+          processedAcc += processed;
+        }
+
+        // update authoritative fullCase after each batch (so UI shows growing data)
+        const data = await getFullCaseData(currentCaseId);
+        setFullCase(data);
+        const authoritativeTotal = data ? data.collectedData.length : 0;
+        setCollectedCount(authoritativeTotal);
+
+        setProcessedTotal(processedAcc || null);
+        setAddedTotal(addedAcc || null);
+
+        // small delay between batches to reduce burst traffic (optional tweak)
+        await new Promise((r) => setTimeout(r, 250));
       }
 
       setLoadingState(null);
-      alert(`Збор завершаны! Дададзена ${totalCollected} новых крыніц.`);
+      setBatchIndex(null);
+      setTotalBatches(null);
     } catch (e: unknown) {
       setError(getErrorMessage(e, "Памылка збору дадзеных."));
-    } finally {
       setLoadingState(null);
+      setBatchIndex(null);
+      setTotalBatches(null);
     }
-  }, [currentCaseId, queries, specializedSourcesText]);
+  }, [currentCaseId, queries, specializedSources]);
 
-  // --- D. Запуск аналізу ---
+  // Analyze
   const handleAnalyze = useCallback(async () => {
-    if (!currentCaseId || collectedCount === 0) {
-      setError("Немагчыма пачаць аналіз: няма сабраных дадзеных.");
+    console.log("[UI] handleAnalyze clicked", {
+      currentCaseId,
+      collectedCount,
+      fullCase,
+    });
+    if (!currentCaseId) {
+      setError("Немагчыма пачаць аналіз: ID сесіі не ўсталяваны.");
       return;
     }
 
-    setError(null);
-    try {
-      setLoadingState("Выкананне OSINT-аналізу... (можа заняць да 2-х хвілін)");
-      const analysisProfiles = await analyzeData(currentCaseId);
-      setAnalysisResult(analysisProfiles);
-
-      // абнаўляем кейс з backend пасля аналізу
-      const updatedCase = await getFullCaseData(currentCaseId);
-      if (updatedCase) {
-        setFullCase(updatedCase);
+    const hasCollectedLocal = Boolean(
+      (fullCase &&
+        Array.isArray(fullCase.collectedData) &&
+        fullCase.collectedData.length > 0) ||
+        collectedCount > 0
+    );
+    console.log("[UI] hasCollectedLocal:", hasCollectedLocal);
+    if (!hasCollectedLocal) {
+      try {
+        setLoadingState("Праверка сесіі перад аналізам...");
+        const serverCase = await getFullCaseData(currentCaseId);
+        console.log("[UI] serverCase:", serverCase);
+        if (
+          !serverCase ||
+          !Array.isArray(serverCase.collectedData) ||
+          serverCase.collectedData.length === 0
+        ) {
+          setError(
+            "Сэсія не мае сабраных дадзеных для аналізу. Пераканайцеся, што збор завершаны."
+          );
+          setLoadingState(null);
+          return;
+        }
+        setFullCase(serverCase);
+        setCollectedCount(serverCase.collectedData.length || 0);
+      } catch (e) {
+        console.error("[UI] памылка пры загрузцы сесіі перад аналізам:", e);
+        setError(getErrorMessage(e, "Памылка праверкі сесіі перад аналізам."));
+        setLoadingState(null);
+        return;
+      } finally {
+        setLoadingState(null);
       }
+    }
 
+    setError(null);
+    setLoadingState("Запускаю аналіз (можа заняць час)...");
+    try {
+      console.log("[UI] POST /api/analyze-data caseId=", currentCaseId);
+      const profiles = await analyzeData(currentCaseId);
+      console.log("[UI] analyzeData response", profiles);
+      setAnalysisResult(profiles || []);
+      const data = await getFullCaseData(currentCaseId);
+      setFullCase(data);
       setLoadingState(null);
-      alert("Аналіз завершаны! Вынікі даступныя ніжэй.");
-    } catch (e: unknown) {
+    } catch (e) {
+      console.error("[UI] Памылка analyzeData:", e);
       setError(getErrorMessage(e, "Памылка аналізу дадзеных."));
       setLoadingState(null);
     }
-  }, [currentCaseId, collectedCount]);
+  }, [currentCaseId, collectedCount, fullCase]);
 
-  // дап. дапаможная функцыя: спрошчанае зліццё/дэдуп па fullName
+  // Dedup/aggregation helper
   function dedupeProfiles(profiles: AiProfile[]) {
     const map = new Map<string, AiProfile[]>();
     for (const p of profiles) {
@@ -358,18 +388,12 @@ export default function OsintHelperApp() {
     return Array.from(map.entries()).map(([k, arr]) => {
       const main = arr[0].mainData;
       const combinedSources = uniqueArray(arr.flatMap((x) => x.sources || []));
-      const combinedContacts = {
-        ...arr[0].contacts,
-      };
       return {
         key: k,
         count: arr.length,
         main,
-        contacts: combinedContacts,
         sources: combinedSources,
-        professionalActivity: arr.flatMap(
-          (x) => x.professionalActivity?.workplacePosition || []
-        ),
+        contacts: arr[0].contacts,
         conclusion: arr.map((x) => x.conclusion).join(" | "),
         accuracyAssessment: arr[0].accuracyAssessment || "N/A",
       };
@@ -378,8 +402,7 @@ export default function OsintHelperApp() {
 
   const deduped = analysisResult ? dedupeProfiles(analysisResult) : [];
 
-  // --- ВІЗУАЛІЗАЦЫЯ: ОСНОВНЫ КАМПАНЕНТ ---
-
+  // Render
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <header className="mb-6 text-center">
@@ -387,7 +410,6 @@ export default function OsintHelperApp() {
       </header>
 
       <div className="max-w-5xl mx-auto space-y-6">
-        {/* Status */}
         {(loadingState || error) && (
           <div
             className={`p-3 rounded-md ${
@@ -398,7 +420,7 @@ export default function OsintHelperApp() {
           </div>
         )}
 
-        {/* 1. Увод задачы / Стварэнне або загрузка кейса */}
+        {/* 1. Create / Load Case */}
         <section className="bg-gray-800 p-6 rounded-xl shadow-md">
           <h2 className="text-xl font-semibold mb-3">
             1. Стварэнне / Загрузка Справы
@@ -409,38 +431,58 @@ export default function OsintHelperApp() {
               className="md:col-span-2 p-3 bg-gray-700 border border-gray-600 rounded text-white"
               rows={2}
               placeholder={
-                "Апішыце задачу / імя для пошуку (напрыклад: Медведев Sergey Викторович, былы дырэктар ТАА &apos;Прагрэс&apos;)"
-              } // escaped apostrophes
+                "Апішыце задачу / імя для пошуку (напрыклад: Медведev Sergey Viktorovich, былы дырэктар ТАА Прагрэс)"
+              }
               value={task}
               onChange={(e) => setTask(e.target.value)}
-              disabled={loadingState !== null}
+              disabled={!isIdle}
             />
             <div className="space-y-2">
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  value={loadCaseIdInput}
-                  onChange={(e) => setLoadCaseIdInput(e.target.value)}
-                  placeholder="Case ID (уручную)"
-                  className="flex-grow p-2 bg-gray-700 border border-gray-600 rounded text-white"
-                />
-                <button
-                  onClick={() => handleViewCase(loadCaseIdInput)}
-                  className="px-3 py-2 bg-gray-600 rounded"
-                >
-                  Загрузіць
-                </button>
-              </div>
               <button
                 onClick={handleStartCase}
+                disabled={!isIdle || !task.trim()}
                 className="w-full px-3 py-2 bg-teal-600 rounded font-medium"
               >
                 Стварыць Новую Справу
               </button>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Case ID (урычную)"
+                  className="w-full p-2 mt-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  onKeyDown={async (e) => {
+                    if (e.key === "Enter") {
+                      const target = e.target as HTMLInputElement;
+                      const id = target.value.trim();
+                      if (!id) return;
+                      setLoadingState("Загрузка сэсіі...");
+                      try {
+                        const data = await getFullCaseData(id);
+                        if (data) {
+                          setCurrentCaseId(id);
+                          setFullCase(data);
+                          setCollectedCount(data.collectedData.length || 0);
+                          setQueries(data.generatedQueries || []);
+                          setAnalysisResult(
+                            data.analysis ? JSON.parse(data.analysis) : null
+                          );
+                        } else {
+                          setError(`Кейс ID ${id} не знойдзены.`);
+                        }
+                      } catch (err) {
+                        setError(
+                          getErrorMessage(err, "Памылка загрузкі кейса.")
+                        );
+                      } finally {
+                        setLoadingState(null);
+                      }
+                    }
+                  }}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Паказваем паўнату Case ID і task калі кейс загружаны */}
           {currentCaseId && fullCase && (
             <div className="mt-3 p-3 bg-gray-700 rounded">
               <div className="text-sm text-gray-300">
@@ -456,33 +498,42 @@ export default function OsintHelperApp() {
           )}
         </section>
 
-        {/* 2. Рэдагаванне запытаў */}
+        {/* 2. Queries and SpecializedSources */}
         <section className="bg-gray-800 p-6 rounded-xl shadow-md">
           <h2 className="text-xl font-semibold mb-3">
             2. Рэдагаванне і Збор Запытаў
           </h2>
 
-          <div className="mb-2">
+          <div className="mb-3 flex space-x-2">
+            <button
+              onClick={addEmptyQuery}
+              className="px-3 py-2 bg-yellow-600 rounded"
+            >
+              Дадаць пусты запыт
+            </button>
             <button
               onClick={handleGenerateVariants}
-              disabled={!isIdle}
-              className="px-3 py-2 bg-indigo-600 rounded mr-2"
+              className="px-3 py-2 bg-indigo-600 rounded"
             >
               Згенераваць Варыянты
             </button>
             <button
+              onClick={addGeneratedVariantsToQueries}
+              className="px-3 py-2 bg-indigo-500 rounded"
+            >
+              Дадаць зген. варыянты
+            </button>
+            <button
               onClick={() => {
+                setQueries([]);
                 setGeneratedVariants(null);
               }}
               className="px-3 py-2 bg-gray-600 rounded"
             >
-              Ачысціць Варыянты
+              Ачысціць усе
             </button>
           </div>
 
-          <label className="block text-sm mb-1 text-gray-300">
-            Рэдагуйце запыты (кожны з новага радка)
-          </label>
           <textarea
             className="w-full p-3 bg-gray-700 border border-gray-600 rounded text-white mb-3"
             rows={6}
@@ -500,7 +551,7 @@ export default function OsintHelperApp() {
           {generatedVariants && (
             <div className="mb-3 p-3 bg-gray-700 rounded">
               <strong className="text-yellow-300">
-                Згенераваныя варыянты (аўтаматычна дададзеныя):
+                Згенераваныя варыянты (папярэдні прагляд):
               </strong>
               <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
@@ -531,187 +582,179 @@ export default function OsintHelperApp() {
             </div>
           )}
 
-          {/* Спецыялізаваны пошук */}
-          <div className="mb-3">
-            <label className="block text-sm mb-1 text-gray-300">
-              Спецыялізаваны пошук (крыніцы: па радках або праз коскі)
-            </label>
-            <textarea
-              className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
-              rows={2}
-              placeholder="Напрыклад: site:rosreestr.ru, site:zakupki.gov.ru або rosreestr.ru"
-              value={specializedSourcesText}
-              onChange={(e) => setSpecializedSourcesText(e.target.value)}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SpecializedSources
+              selected={specializedSources}
+              onChange={setSpecializedSources}
             />
-            <p className="text-xs text-gray-400 mt-1">
-              Калі ўвесці крыніцы — пошук па гэтых крыніцах будзе выконвацца
-              разам з асноўным пошукам.
-            </p>
-          </div>
-
-          <div className="flex space-x-2">
-            <button
-              onClick={handleCollectAll}
-              disabled={!isReadyForCollection || !isIdle}
-              className="px-4 py-2 bg-green-600 rounded"
-            >
-              Запусціць Збор ({queries.length} запытаў)
-            </button>
-            <button
-              onClick={() => {
-                setQueries([]);
-                setGeneratedVariants(null);
-              }}
-              className="px-4 py-2 bg-gray-600 rounded"
-            >
-              Ачысціць Запыты
-            </button>
+            <div className="flex items-end">
+              <div className="w-full">
+                <button
+                  onClick={handleCollectAll}
+                  disabled={!isReadyForCollection || !isIdle}
+                  className="px-4 py-2 bg-green-600 rounded w-full"
+                >
+                  Запусціць Збор ({queries.length})
+                </button>
+                {totalBatches !== null && batchIndex !== null && (
+                  <div className="text-xs text-gray-400 mt-2">
+                    Партыя {batchIndex + 1} з {totalBatches}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </section>
+
+        {/* Raw sources */}
+        {fullCase &&
+          fullCase.collectedData &&
+          fullCase.collectedData.length > 0 && (
+            <section className="bg-gray-800 p-6 rounded-xl shadow-md">
+              <h3 className="text-lg font-semibold text-white mb-3">
+                Сырыя дадзеныя кейса (агульна)
+              </h3>
+              <div className="max-h-64 overflow-auto bg-gray-700 p-3 rounded text-sm text-gray-200 whitespace-pre-wrap">
+                {fullCase.collectedData.map((d: SearchQuery, i: number) => (
+                  <div key={i} className="mb-4 border-b border-gray-600 pb-2">
+                    <div className="text-xs text-gray-400">
+                      #{i + 1} — {d.title} —{" "}
+                      <a
+                        href={d.url}
+                        className="text-blue-300 underline"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {d.url}
+                      </a>
+                    </div>
+                    <div className="mt-1 text-gray-200">{d.snippet}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 text-sm text-gray-300">
+                <div>Апрацавана (прыбл.): {processedTotal ?? "N/A"}</div>
+                <div>Дададзена новых крыніц: {addedTotal ?? "N/A"}</div>
+                <div>Агульная колькасць у базе: {collectedCount}</div>
+              </div>
+            </section>
+          )}
+
+        {/* Aggregated profiles preview */}
+        {deduped.length > 0 && (
+          <section className="bg-gray-800 p-6 rounded-xl shadow-md">
+            <h3 className="text-lg font-semibold text-teal-300">
+              Знойдзеныя Аб-екты (агрэгацыя)
+            </h3>
+            {deduped.map((d, idx) => (
+              <div key={idx} className="p-3 bg-gray-700 rounded mb-3">
+                <div className="font-bold text-yellow-300">
+                  {d.main?.fullName || "Без імя"} — {d.count} прывязак
+                </div>
+                <div className="text-sm text-gray-400 mt-1">
+                  Крыніц: {d.sources.length}
+                </div>
+                <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-200">
+                  <div>
+                    <strong>Асноўныя Дадзеныя:</strong>
+                    <div>Поўнае імя: {d.main?.fullName || "N/A"}</div>
+                    <div>
+                      Псеўданімы:{" "}
+                      {(d.main?.possibleNicknames || []).join(", ") || "N/A"}
+                    </div>
+                    <div>Дата нараджэння: {d.main?.dateOfBirth || "N/A"}</div>
+                    <div>Месца нараджэння: {d.main?.placeOfBirth || "N/A"}</div>
+                    <div>Грамадзянства: {d.main?.citizenship || "N/A"}</div>
+                  </div>
+                  <div>
+                    <strong>Кантакты / Сацыяльныя сеткі:</strong>
+                    <div>
+                      E-mail: {(d.contacts?.email || []).join(", ") || "N/A"}
+                    </div>
+                    <div>
+                      Тэлефон: {(d.contacts?.phone || []).join(", ") || "N/A"}
+                    </div>
+                    <div>
+                      Адрас пражывання: {d.contacts?.residenceAddress || "N/A"}
+                    </div>
+                    <div>
+                      VK / LinkedIn / Telegram:{" "}
+                      {(d.sources || []).slice(0, 5).join(", ") || "N/A"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </section>
+        )}
 
         {/* 3. Аналіз */}
         <section className="bg-gray-800 p-6 rounded-xl shadow-md">
           <h2 className="text-xl font-semibold mb-3">3. Аналіз</h2>
+
           <div className="mb-3 text-sm text-gray-300">
             Сабраных крыніц:{" "}
             <strong className="text-green-300">{collectedCount}</strong>
           </div>
+
           <div className="flex space-x-2 mb-4">
             <button
               onClick={handleAnalyze}
-              disabled={!isReadyForAnalysis}
+              disabled={!isReadyForAnalysis || !isIdle}
               className="px-4 py-2 bg-teal-600 rounded"
             >
               Запусціць Аналіз
             </button>
+            <button
+              onClick={async () => {
+                if (!currentCaseId) return;
+                setLoadingState("Аднаўленне дадзеных кейса...");
+                try {
+                  const data = await getFullCaseData(currentCaseId);
+                  setFullCase(data);
+                  setCollectedCount(data?.collectedData.length || 0);
+                } catch (e) {
+                  setError(getErrorMessage(e, "Памылка загрузкі кейса"));
+                } finally {
+                  setLoadingState(null);
+                }
+              }}
+              className="px-4 py-2 bg-gray-600 rounded"
+            >
+              Абнавіць дадзеныя кейса
+            </button>
           </div>
 
-          {/* Агляд аб'яднаных профіляў (дэ-дауп) */}
-          {deduped.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-teal-300">
-                Знойдзеныя Абекты (агрэгацыя)
-              </h3>
-              {deduped.map((d, idx) => (
-                <div key={idx} className="p-3 bg-gray-700 rounded">
-                  <div className="flex justify-between">
-                    <div>
-                      <div className="font-bold text-yellow-300">
-                        {d.main?.fullName || "Без імя"}
-                      </div>
-                      <div className="text-sm text-gray-400">
-                        Крыніц: {d.sources.length} • Прывязак: {d.count}
-                      </div>
+          {Array.isArray(analysisResult) && analysisResult.length > 0 && (
+            <div className="mb-3 p-3 bg-gray-700 rounded">
+              <div className="text-sm text-gray-300 mb-2">
+                Вынікі аналізу: {analysisResult.length} профіляў
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {analysisResult.slice(0, 6).map((p, idx) => (
+                  <div
+                    key={idx}
+                    className="p-2 bg-gray-800 rounded border border-gray-600"
+                  >
+                    <div className="font-semibold text-yellow-300">
+                      {p.mainData?.fullName || "Без імя"}
                     </div>
-                    <div className="text-sm text-gray-300">
-                      Супадзенне:{" "}
-                      {Math.min(
-                        100,
-                        Math.round(
-                          (d.sources.length / Math.max(1, collectedCount)) * 100
-                        )
-                      )}
-                      %
+                    <div className="text-xs text-gray-400">
+                      Грамадзянства: {p.mainData?.citizenship || "N/A"}
+                    </div>
+                    <div className="text-sm text-gray-200 mt-1">
+                      {(p.contacts?.email || []).slice(0, 2).join(", ") ||
+                        "N/A"}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">
+                      Крыніц: {(p.sources || []).length}
                     </div>
                   </div>
-
-                  <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-200">
-                    <div>
-                      <strong>Асноўныя Дадзеныя:</strong>
-                      <div>Поўнае імя: {d.main?.fullName || "N/A"}</div>
-                      <div>
-                        Псеўданімы:{" "}
-                        {(d.main?.possibleNicknames || []).join(", ") || "N/A"}
-                      </div>
-                      <div>Дата нараджэння: {d.main?.dateOfBirth || "N/A"}</div>
-                      <div>
-                        Месца нараджэння: {d.main?.placeOfBirth || "N/A"}
-                      </div>
-                      <div>Грамадзянства: {d.main?.citizenship || "N/A"}</div>
-                    </div>
-                    <div>
-                      <strong>Кантакты / Сацыяльныя сеткі:</strong>
-                      <div>
-                        E-mail: {(d.contacts?.email || []).join(", ") || "N/A"}
-                      </div>
-                      <div>
-                        Тэлефон: {(d.contacts?.phone || []).join(", ") || "N/A"}
-                      </div>
-                      <div>
-                        Адрас пражывання:{" "}
-                        {d.contacts?.residenceAddress || "N/A"}
-                      </div>
-                      <div>
-                        VK / LinkedIn / Telegram:{" "}
-                        {(d.sources || []).slice(0, 5).join(", ") || "N/A"}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 text-sm text-gray-300">
-                    <strong>Высновы:</strong>
-                    <div>{d.conclusion || "N/A"}</div>
-                  </div>
-
-                  <div className="mt-2">
-                    <strong>Крыніцы (абмежаваны прэвю):</strong>
-                    <ul className="list-disc ml-5 text-sm text-gray-200">
-                      {d.sources.slice(0, 6).map((s, i) => (
-                        <li key={i}>
-                          <a
-                            href={s}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-blue-300 underline break-all"
-                          >
-                            {s}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </section>
-
-        {/* 4. Табліца цёзак (кароткая) */}
-        {transformToTsezka.length > 0 && (
-          <section className="bg-gray-800 p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold mb-3">
-              Вынік Аналізу (Кароткая Табліца)
-            </h2>
-            <TableComponent tsezki={transformToTsezka(analysisResult || [])} />
-          </section>
-        )}
-
-        {/* 5. Сырыя дадзеныя кейса */}
-        {fullCase && (
-          <section className="bg-gray-800 p-6 rounded-xl shadow-md">
-            <h3 className="text-lg font-semibold text-white mb-3">
-              Сырыя дадзеныя кейса
-            </h3>
-            <div className="max-h-64 overflow-auto bg-gray-700 p-3 rounded text-sm text-gray-200 whitespace-pre-wrap">
-              {fullCase.collectedData.map((d: SearchQuery, i: number) => (
-                <div key={i} className="mb-4 border-b border-gray-600 pb-2">
-                  <div className="text-xs text-gray-400">
-                    #{i + 1} — {d.title} —{" "}
-                    <a
-                      href={d.url}
-                      className="text-blue-300 underline"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {d.url}
-                    </a>
-                  </div>
-                  <div className="mt-1 text-gray-200">{d.snippet}</div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
       </div>
 
       <footer className="mt-10 text-center text-gray-500 text-sm">

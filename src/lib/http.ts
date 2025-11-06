@@ -1,5 +1,5 @@
+// src/lib/http.ts
 // Simple fetch wrapper with retries, timeout and proper typing.
-// Replaces any with a generic type parameter <T> so callers get typed responses.
 
 export type FetchOptions = {
   method?: string;
@@ -12,21 +12,12 @@ export type FetchOptions = {
 
 const defaultOptions = { retries: 2, timeoutMs: 15000 };
 
-async function timeoutPromise<T>(p: Promise<T>, ms: number): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const t = setTimeout(() => reject(new Error("Request timeout")), ms);
-    p.then((r) => (clearTimeout(t), resolve(r))).catch((e) => {
-      clearTimeout(t);
-      reject(e);
-    });
-  });
-}
-
 /**
  * fetchJson - typed wrapper around fetch returning parsed JSON of type T
  * - path can be absolute URL or relative path (baseUrl will be prepended)
  * - options.body will be JSON.stringified when provided
  * - retries with exponential backoff for 429 and 5xx
+ * - supports timeout via AbortController (timeoutMs)
  */
 export async function fetchJson<T = unknown>(
   path: string,
@@ -45,17 +36,19 @@ export async function fetchJson<T = unknown>(
 
   let attempt = 0;
   while (true) {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
     try {
-      const controller = new AbortController();
-      const signal = controller.signal;
-      const fetchPromise = fetch(url, {
+      const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json", ...headers },
         body: body !== undefined ? JSON.stringify(body) : undefined,
         signal,
       });
 
-      const res = await timeoutPromise(fetchPromise, timeoutMs);
+      clearTimeout(timeoutId);
 
       if (!res.ok) {
         const text = await res.text().catch(() => "");
@@ -81,16 +74,31 @@ export async function fetchJson<T = unknown>(
       }
       const json = JSON.parse(text) as T;
       return json;
-    } catch (e) {
-      // if we still can retry, do it
+    } catch (err) {
+      clearTimeout(timeoutId);
+
+      // If aborted by timeout
+      if ((err as Error)?.name === "AbortError") {
+        // if we can retry, do exponential backoff then retry
+        if (attempt < retries) {
+          attempt++;
+          const backoff = Math.pow(2, attempt) * 250 + Math.random() * 200;
+          await new Promise((r) => setTimeout(r, backoff));
+          continue;
+        }
+        throw new Error("Request timeout");
+      }
+
+      // other network errors: retry if attempts left
       if (attempt < retries) {
         attempt++;
         const backoff = Math.pow(2, attempt) * 250 + Math.random() * 200;
         await new Promise((r) => setTimeout(r, backoff));
         continue;
       }
+
       // no retries left — rethrow
-      throw e;
+      throw err;
     }
   }
 }
