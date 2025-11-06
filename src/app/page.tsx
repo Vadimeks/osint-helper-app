@@ -1,9 +1,8 @@
-// src/app/page.tsx
 "use client";
 
 import { useState, useCallback } from "react";
 import SpecializedSources from "@/app/components/SpecializedSources";
-import { Tsezka, AiProfile, CaseData, SearchQuery } from "@/types/osint";
+import { AiProfile, CaseData, SearchQuery } from "@/types/osint";
 import { fetchJson } from "@/lib/http"; // typed wrapper
 
 // Local types
@@ -13,26 +12,26 @@ interface GeneratedVariants {
   usernameVariants: string[];
 }
 
+type CollectResp = {
+  entriesCount?: number;
+  collectedCount?: number;
+  processedResults?: number;
+  sourceUsed?: string;
+} | null;
+
+type AnalyzeRespObj = {
+  analysisData?: AiProfile[];
+  analysis?: string;
+  error?: string;
+};
+type AnalyzeResp = AnalyzeRespObj | AiProfile[] | null;
+
 // Helpers
 const getErrorMessage = (error: unknown, defaultMsg = "Невядомая памылка") =>
   error instanceof Error ? error.message : defaultMsg;
 
 const uniqueArray = (arr: string[]) =>
   Array.from(new Set(arr.map((s) => s.trim()).filter((s) => s.length > 0)));
-
-const transformToTsezka = (profiles: AiProfile[]): Tsezka[] =>
-  profiles.map((profile) => ({
-    name: profile.mainData?.fullName || "Няма імя",
-    region: profile.contacts?.residenceAddress || "Невядомы рэгіён",
-    activity:
-      (profile.professionalActivity?.workplacePosition || []).join(", ") ||
-      "Няма дзейнасці",
-    certainty: `${profile.accuracyAssessment || "N/A"}. ${
-      profile.conclusion || ""
-    }`,
-    url:
-      profile.sources && profile.sources.length > 0 ? profile.sources[0] : "#",
-  }));
 
 // API wrappers (use fetchJson wrapper)
 async function generateVariants(fullName: string): Promise<GeneratedVariants> {
@@ -58,33 +57,14 @@ async function collectData(
   caseId: string,
   searchQuery: string,
   specializedSources?: string[]
-): Promise<{
-  entriesCount: number;
-  collectedCount: number;
-  processedResults?: number;
-  sourceUsed?: string;
-}> {
-  return fetchJson<{
-    entriesCount: number;
-    collectedCount: number;
-    processedResults?: number;
-    sourceUsed?: string;
-  }>("/api/collect-data", {
+): Promise<CollectResp> {
+  return fetchJson<CollectResp>("/api/collect-data", {
     method: "POST",
     body: { caseId, searchQuery, specializedSources },
   });
 }
 
 // IMPORTANT: analyzeData uses an extended timeout (timeoutMs) because analysis can be long
-type AnalyzeResp =
-  | {
-      analysisData?: AiProfile[];
-      analysis?: string;
-      error?: string;
-    }
-  | AiProfile[]
-  | null;
-
 async function analyzeData(caseId: string): Promise<AiProfile[]> {
   const resp = await fetchJson<AnalyzeResp>("/api/analyze-data", {
     method: "POST",
@@ -94,19 +74,29 @@ async function analyzeData(caseId: string): Promise<AiProfile[]> {
 
   if (!resp) return [];
 
-  if (Array.isArray(resp)) return resp as AiProfile[];
+  // If API returned direct array
+  if (Array.isArray(resp)) {
+    return resp as AiProfile[];
+  }
 
-  if (resp.error) throw new Error(resp.error);
-  if (Array.isArray(resp.analysisData)) return resp.analysisData!;
-  if (typeof resp.analysis === "string") {
-    try {
-      const parsed = JSON.parse(resp.analysis);
-      if (Array.isArray(parsed)) return parsed as AiProfile[];
-      return [];
-    } catch {
-      return [];
+  // If object shape
+  if (typeof resp === "object" && resp !== null) {
+    if ("error" in resp && typeof resp.error === "string" && resp.error) {
+      throw new Error(resp.error);
+    }
+    if ("analysisData" in resp && Array.isArray(resp.analysisData)) {
+      return resp.analysisData!;
+    }
+    if ("analysis" in resp && typeof resp.analysis === "string") {
+      try {
+        const parsed = JSON.parse(resp.analysis);
+        if (Array.isArray(parsed)) return parsed as AiProfile[];
+      } catch {
+        // ignore parse error
+      }
     }
   }
+
   return [];
 }
 
@@ -172,7 +162,6 @@ export default function OsintHelperApp() {
     }
   }, [task]);
 
-  // Variant B: generate variants only previews them
   const handleGenerateVariants = useCallback(async () => {
     if (!task.trim()) {
       setError("Калі ласка, увядзіце імя/задачу для генерацыі варыянтаў.");
@@ -201,7 +190,6 @@ export default function OsintHelperApp() {
   const addEmptyQuery = useCallback(() => setQueries((p) => [...p, ""]), []);
 
   // helper: run limited concurrency workers over an array of tasks (simple)
-  // typed to return array of R | undefined
   async function runWithConcurrency<T, R>(
     items: T[],
     worker: (it: T, idx: number) => Promise<R>,
@@ -217,7 +205,6 @@ export default function OsintHelperApp() {
           const r = await worker(items[idx], idx);
           results[idx] = r;
         } catch {
-          // on error store undefined
           results[idx] = undefined;
         }
       }
@@ -229,8 +216,7 @@ export default function OsintHelperApp() {
     return results;
   }
 
-  // Collect flow: split queries into batches of QUERIES_BATCH_SIZE and process each batch sequentially.
-  // Within a batch we use limited concurrency (COLLECT_CONCURRENCY) to avoid overwhelming CS API.
+  // Collect flow
   const handleCollectAll = useCallback(async () => {
     if (!currentCaseId || queries.length === 0) {
       setError("Няма кейса або няма запытаў для збору.");
@@ -262,7 +248,6 @@ export default function OsintHelperApp() {
           `Збор партыі ${bi + 1}/${batches.length} (${batch.length} запытаў)...`
         );
 
-        // Worker function for an individual query
         const worker = async (q: string) => {
           const resp = await collectData(
             currentCaseId!,
@@ -272,15 +257,13 @@ export default function OsintHelperApp() {
           return resp;
         };
 
-        // Execute batch with limited concurrency
-        type CollectResp = Awaited<ReturnType<typeof collectData>>;
-        const results = await runWithConcurrency<string, CollectResp>(
+        type CollectRespLocal = Awaited<ReturnType<typeof collectData>>;
+        const results = await runWithConcurrency<string, CollectRespLocal>(
           batch,
           worker,
           COLLECT_CONCURRENCY
         );
 
-        // Aggregate results for the batch
         for (const res of results) {
           if (!res) continue;
           const entries = Number(res.entriesCount ?? 0);
@@ -289,7 +272,7 @@ export default function OsintHelperApp() {
           processedAcc += processed;
         }
 
-        // update authoritative fullCase after each batch (so UI shows growing data)
+        // update authoritative fullCase after each batch
         const data = await getFullCaseData(currentCaseId);
         setFullCase(data);
         const authoritativeTotal = data ? data.collectedData.length : 0;
@@ -298,7 +281,6 @@ export default function OsintHelperApp() {
         setProcessedTotal(processedAcc || null);
         setAddedTotal(addedAcc || null);
 
-        // small delay between batches to reduce burst traffic (optional tweak)
         await new Promise((r) => setTimeout(r, 250));
       }
 
@@ -350,7 +332,7 @@ export default function OsintHelperApp() {
         }
         setFullCase(serverCase);
         setCollectedCount(serverCase.collectedData.length || 0);
-      } catch (e) {
+      } catch (e: unknown) {
         console.error("[UI] памылка пры загрузцы сесіі перад аналізам:", e);
         setError(getErrorMessage(e, "Памылка праверкі сесіі перад аналізам."));
         setLoadingState(null);
@@ -370,7 +352,7 @@ export default function OsintHelperApp() {
       const data = await getFullCaseData(currentCaseId);
       setFullCase(data);
       setLoadingState(null);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error("[UI] Памылка analyzeData:", e);
       setError(getErrorMessage(e, "Памылка аналізу дадзеных."));
       setLoadingState(null);
@@ -713,7 +695,7 @@ export default function OsintHelperApp() {
                   const data = await getFullCaseData(currentCaseId);
                   setFullCase(data);
                   setCollectedCount(data?.collectedData.length || 0);
-                } catch (e) {
+                } catch (e: unknown) {
                   setError(getErrorMessage(e, "Памылка загрузкі кейса"));
                 } finally {
                   setLoadingState(null);
